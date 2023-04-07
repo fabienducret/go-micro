@@ -1,6 +1,7 @@
 package main
 
 import (
+	"authentication/data"
 	"errors"
 	"fmt"
 	"net/http"
@@ -30,11 +31,15 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := jsonResponse{
+	payload := formatAuthenticateResponse(user)
+
+	app.writeJSON(w, http.StatusAccepted, payload)
+}
+
+func formatAuthenticateResponse(user *data.User) jsonResponse {
+	return jsonResponse{
 		Error:   false,
 		Message: fmt.Sprintf("Logged in user %s", user.Email),
 		Data:    user,
 	}
-
-	app.writeJSON(w, http.StatusAccepted, payload)
 }
