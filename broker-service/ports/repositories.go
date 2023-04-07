@@ -1,7 +1,10 @@
 package ports
 
-import "io"
+type AuthenticateResponse struct {
+	Error bool
+	Data  any
+}
 
 type AuthenticationService interface {
-	AuthenticateWith(email string, password string) (io.ReadCloser, error)
+	AuthenticateWith(email string, password string) (*AuthenticateResponse, error)
 }
