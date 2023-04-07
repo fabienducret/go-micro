@@ -16,8 +16,6 @@ import (
 
 const webPort = "80"
 
-var counts int64
-
 type Config struct {
 	DB     *sql.DB
 	Models data.Models
@@ -64,6 +62,7 @@ func openDB(dsn string) (*sql.DB, error) {
 
 func connectToDB() *sql.DB {
 	dsn := os.Getenv("DSN")
+	var counts int64
 
 	for {
 		connection, err := openDB(dsn)
