@@ -24,26 +24,6 @@ type Config struct {
 }
 
 func main() {
-	mongoClient := mongoClient()
-
-	app := Config{
-		Models: data.New(mongoClient),
-	}
-
-	// start web server
-	log.Println("Starting service on port", webPort)
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
-
-	err := srv.ListenAndServe()
-	if err != nil {
-		log.Panic(err)
-	}
-}
-
-func mongoClient() *mongo.Client {
 	mongoClient, err := connectToMongo()
 	if err != nil {
 		log.Panic(err)
@@ -58,7 +38,21 @@ func mongoClient() *mongo.Client {
 		}
 	}()
 
-	return mongoClient
+	app := Config{
+		Models: data.New(mongoClient),
+	}
+
+	// start web server
+	log.Println("Starting service on port", webPort)
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func connectToMongo() (*mongo.Client, error) {
