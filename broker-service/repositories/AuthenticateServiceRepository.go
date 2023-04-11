@@ -22,8 +22,8 @@ func NewAuthenticateServiceRepository() *authenticateServiceRepository {
 	return &authenticateServiceRepository{}
 }
 
-func (a authenticateServiceRepository) AuthenticateWith(email string, password string) (*ports.AuthenticateResponse, error) {
-	toSend := formatRequest(email, password)
+func (a authenticateServiceRepository) AuthenticateWith(credentials ports.Credentials) (*ports.AuthenticateResponse, error) {
+	toSend := formatCredentialsRequest(credentials)
 
 	request, err := http.NewRequest("POST", authenticateUrl, toSend)
 	if err != nil {
@@ -46,10 +46,10 @@ func (a authenticateServiceRepository) AuthenticateWith(email string, password s
 	return parseResponse(response.Body)
 }
 
-func formatRequest(email string, password string) *bytes.Buffer {
+func formatCredentialsRequest(credentials ports.Credentials) *bytes.Buffer {
 	authPayload := authPayload{
-		Email:    email,
-		Password: password,
+		Email:    credentials.Email,
+		Password: credentials.Password,
 	}
 
 	jsonData, _ := json.MarshalIndent(authPayload, "", "\t")

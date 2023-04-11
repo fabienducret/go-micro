@@ -6,16 +6,6 @@ import (
 	"net/http"
 )
 
-type RequestPayload struct {
-	Action string      `json:"action"`
-	Auth   AuthPayload `json:"auth,omitempty"`
-}
-
-type AuthPayload struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
 		Error:   false,
@@ -25,27 +15,34 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, payload)
 }
 
-func (app *Config) HandleSubmissionFactory(asr ports.AuthenticationService) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var requestPayload RequestPayload
+func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
+	var requestPayload ports.RequestPayload
 
-		err := app.readJSON(w, r, &requestPayload)
+	err := app.readJSON(w, r, &requestPayload)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	switch requestPayload.Action {
+	case "auth":
+		asr := app.Container.AuthenticationServiceRepository
+		payload, err := Authenticate(asr, requestPayload.Auth.Email, requestPayload.Auth.Password)
 		if err != nil {
-			app.errorJSON(w, err)
+			app.errorJSON(w, err, http.StatusUnauthorized)
 			return
 		}
 
-		switch requestPayload.Action {
-		case "auth":
-			payload, err := app.Authenticate(asr, requestPayload.Auth.Email, requestPayload.Auth.Password)
-			if err != nil {
-				app.errorJSON(w, err, http.StatusUnauthorized)
-				return
-			}
-
-			app.writeJSON(w, http.StatusAccepted, payload)
-		default:
-			app.errorJSON(w, errors.New("unknown action"))
+		app.writeJSON(w, http.StatusAccepted, payload)
+	case "log":
+		lr := app.Container.LoggerRepository
+		payload, err := Log(lr, requestPayload.Log.Name, requestPayload.Log.Data)
+		if err != nil {
+			app.errorJSON(w, err)
 		}
+
+		app.writeJSON(w, http.StatusAccepted, payload)
+	default:
+		app.errorJSON(w, errors.New("unknown action"))
 	}
 }

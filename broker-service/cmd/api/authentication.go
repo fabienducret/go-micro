@@ -5,8 +5,13 @@ import (
 	"errors"
 )
 
-func (app *Config) Authenticate(asr ports.AuthenticationService, email string, password string) (*jsonResponse, error) {
-	response, err := asr.AuthenticateWith(email, password)
+func Authenticate(asr ports.AuthenticationService, email string, password string) (*jsonResponse, error) {
+	creds := ports.Credentials{
+		Email:    email,
+		Password: password,
+	}
+
+	response, err := asr.AuthenticateWith(creds)
 	if err != nil {
 		return nil, err
 	}

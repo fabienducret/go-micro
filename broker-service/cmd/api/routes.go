@@ -1,7 +1,6 @@
 package main
 
 import (
-	"broker/ports"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -9,7 +8,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func (app *Config) routes(asr ports.AuthenticationService) http.Handler {
+func (app *Config) routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{
@@ -25,7 +24,7 @@ func (app *Config) routes(asr ports.AuthenticationService) http.Handler {
 
 	mux.Post("/", app.Broker)
 
-	mux.Post("/handle", app.HandleSubmissionFactory(asr))
+	mux.Post("/handle", app.HandleSubmission)
 
 	return mux
 }
