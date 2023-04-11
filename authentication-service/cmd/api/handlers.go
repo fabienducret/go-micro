@@ -31,6 +31,13 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lr := app.Container.LoggerRepository
+	err = lr.Log("authentication", fmt.Sprintf("%s logged in", user.Email))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
 	payload := formatAuthenticateResponse(user)
 
 	app.writeJSON(w, http.StatusAccepted, payload)

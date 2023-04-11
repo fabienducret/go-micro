@@ -2,6 +2,8 @@ package main
 
 import (
 	"authentication/data"
+	"authentication/ports"
+	"authentication/repositories"
 	"database/sql"
 	"fmt"
 	"log"
@@ -16,9 +18,14 @@ import (
 
 const webPort = "80"
 
+type Container struct {
+	LoggerRepository ports.Logger
+}
+
 type Config struct {
-	DB     *sql.DB
-	Models data.Models
+	Container Container
+	DB        *sql.DB
+	Models    data.Models
 }
 
 func main() {
@@ -31,6 +38,9 @@ func main() {
 	}
 
 	app := Config{
+		Container: Container{
+			LoggerRepository: repositories.NewLoggerRepository(),
+		},
 		DB:     conn,
 		Models: data.New(conn),
 	}
