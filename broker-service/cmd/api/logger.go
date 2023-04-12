@@ -5,10 +5,7 @@ import (
 )
 
 func Log(lr ports.Logger, payload ports.LogPayload) (*jsonResponse, error) {
-	entry := ports.Log{
-		Name: payload.Name,
-		Data: payload.Data,
-	}
+	entry := ports.Log(payload)
 
 	err := lr.Log(entry)
 	if err != nil {

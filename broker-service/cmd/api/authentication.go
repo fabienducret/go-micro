@@ -6,10 +6,7 @@ import (
 )
 
 func Authenticate(asr ports.AuthenticationService, payload ports.AuthPayload) (*jsonResponse, error) {
-	creds := ports.Credentials{
-		Email:    payload.Email,
-		Password: payload.Password,
-	}
+	creds := ports.Credentials(payload)
 
 	response, err := asr.AuthenticateWith(creds)
 	if err != nil {
