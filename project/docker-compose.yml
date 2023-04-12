@@ -31,8 +31,26 @@ services:
     environment:
       DSN: 'host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5'
 
+  mail-service:
+    build:
+      context: ./../mail-service
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_ENCRYPTION: "none"
+      FROM_NAME: "John Smith"
+      FROM_ADDRESS: "johnsmith@example.com"
+
   postgres:
     image: 'postgres:14.0'
+    platform: linux/amd64
     ports:
       - '5432:5432'
     restart: always
@@ -49,6 +67,7 @@ services:
 
   mongo:
     image: 'mongo:4.2.16-bionic'
+    platform: linux/amd64
     ports:
       - '27017:27017'
     environment:
@@ -58,3 +77,10 @@ services:
     volumes:
       - ./db-data/mongo/:/data/db
       
+
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    platform: linux/amd64
+    ports:
+      - '1025:1025'
+      - '8025:8025'

@@ -42,6 +42,20 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		}
 
 		app.writeJSON(w, http.StatusAccepted, payload)
+	case "mail":
+		mr := app.Container.MailerRepository
+		payload, err := SendMail(
+			mr,
+			requestPayload.Mail.From,
+			requestPayload.Mail.To,
+			requestPayload.Mail.Subject,
+			requestPayload.Mail.Message,
+		)
+		if err != nil {
+			app.errorJSON(w, err)
+		}
+
+		app.writeJSON(w, http.StatusAccepted, payload)
 	default:
 		app.errorJSON(w, errors.New("unknown action"))
 	}

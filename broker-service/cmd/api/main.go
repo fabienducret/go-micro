@@ -13,6 +13,7 @@ const webPort = "80"
 type Container struct {
 	AuthenticationServiceRepository ports.AuthenticationService
 	LoggerRepository                ports.Logger
+	MailerRepository                ports.Mailer
 }
 
 type Config struct {
@@ -24,6 +25,7 @@ func main() {
 		Container{
 			AuthenticationServiceRepository: repositories.NewAuthenticateServiceRepository(),
 			LoggerRepository:                repositories.NewLoggerRepository(),
+			MailerRepository:                repositories.NewMailerRepository(),
 		},
 	}
 
