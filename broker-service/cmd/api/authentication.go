@@ -5,10 +5,10 @@ import (
 	"errors"
 )
 
-func Authenticate(asr ports.AuthenticationService, email string, password string) (*jsonResponse, error) {
+func Authenticate(asr ports.AuthenticationService, payload ports.AuthPayload) (*jsonResponse, error) {
 	creds := ports.Credentials{
-		Email:    email,
-		Password: password,
+		Email:    payload.Email,
+		Password: payload.Password,
 	}
 
 	response, err := asr.AuthenticateWith(creds)

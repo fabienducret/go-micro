@@ -27,7 +27,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	switch requestPayload.Action {
 	case "auth":
 		asr := app.Container.AuthenticationServiceRepository
-		payload, err := Authenticate(asr, requestPayload.Auth.Email, requestPayload.Auth.Password)
+		payload, err := Authenticate(asr, requestPayload.Auth)
 		if err != nil {
 			app.errorJSON(w, err, http.StatusUnauthorized)
 			return
@@ -36,7 +36,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusAccepted, payload)
 	case "log":
 		lr := app.Container.LoggerRepository
-		payload, err := Log(lr, requestPayload.Log.Name, requestPayload.Log.Data)
+		payload, err := Log(lr, requestPayload.Log)
 		if err != nil {
 			app.errorJSON(w, err)
 		}
@@ -44,13 +44,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusAccepted, payload)
 	case "mail":
 		mr := app.Container.MailerRepository
-		payload, err := SendMail(
-			mr,
-			requestPayload.Mail.From,
-			requestPayload.Mail.To,
-			requestPayload.Mail.Subject,
-			requestPayload.Mail.Message,
-		)
+		payload, err := SendMail(mr, requestPayload.Mail)
 		if err != nil {
 			app.errorJSON(w, err)
 		}

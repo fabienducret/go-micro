@@ -4,10 +4,10 @@ import (
 	"broker/ports"
 )
 
-func Log(lr ports.Logger, name, data string) (*jsonResponse, error) {
+func Log(lr ports.Logger, payload ports.LogPayload) (*jsonResponse, error) {
 	entry := ports.Log{
-		Name: name,
-		Data: data,
+		Name: payload.Name,
+		Data: payload.Data,
 	}
 
 	err := lr.Log(entry)
@@ -15,10 +15,12 @@ func Log(lr ports.Logger, name, data string) (*jsonResponse, error) {
 		return nil, err
 	}
 
-	payload := &jsonResponse{
+	return logSentPayload(), nil
+}
+
+func logSentPayload() *jsonResponse {
+	return &jsonResponse{
 		Error:   false,
 		Message: "logged",
 	}
-
-	return payload, nil
 }

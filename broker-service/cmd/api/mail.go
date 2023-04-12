@@ -4,23 +4,25 @@ import (
 	"broker/ports"
 )
 
-func SendMail(mr ports.Mailer, from, to, subject, message string) (*jsonResponse, error) {
-	msg := ports.Mail{
-		From:    from,
-		To:      to,
-		Subject: subject,
-		Message: message,
+func SendMail(mr ports.Mailer, payload ports.MailPayload) (*jsonResponse, error) {
+	mail := ports.Mail{
+		From:    payload.From,
+		To:      payload.To,
+		Subject: payload.Subject,
+		Message: payload.Message,
 	}
 
-	err := mr.Send(msg)
+	err := mr.Send(mail)
 	if err != nil {
 		return nil, err
 	}
 
-	payload := &jsonResponse{
+	return mailSentPayload(mail.To), nil
+}
+
+func mailSentPayload(to string) *jsonResponse {
+	return &jsonResponse{
 		Error:   false,
 		Message: "Message sent to " + to,
 	}
-
-	return payload, nil
 }
