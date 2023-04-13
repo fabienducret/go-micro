@@ -18,6 +18,6 @@ func Log(lr ports.Logger, payload ports.LogPayload) (*jsonResponse, error) {
 func logSentPayload() *jsonResponse {
 	return &jsonResponse{
 		Error:   false,
-		Message: "logged",
+		Message: "logged via RabbitMQ",
 	}
 }
