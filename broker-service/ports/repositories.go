@@ -27,7 +27,7 @@ type AuthenticationService interface {
 }
 
 type Logger interface {
-	Log(Log) error
+	Log(Log) (string, error)
 }
 
 type Mailer interface {

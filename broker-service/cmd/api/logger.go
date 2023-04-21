@@ -7,17 +7,17 @@ import (
 func Log(lr ports.Logger, payload ports.LogPayload) (*jsonResponse, error) {
 	entry := ports.Log(payload)
 
-	err := lr.Log(entry)
+	result, err := lr.Log(entry)
 	if err != nil {
 		return nil, err
 	}
 
-	return logSentPayload(), nil
+	return logSentPayload(result), nil
 }
 
-func logSentPayload() *jsonResponse {
+func logSentPayload(result string) *jsonResponse {
 	return &jsonResponse{
 		Error:   false,
-		Message: "logged via RabbitMQ",
+		Message: result,
 	}
 }

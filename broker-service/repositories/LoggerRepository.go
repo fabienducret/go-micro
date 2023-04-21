@@ -1,48 +1,38 @@
 package repositories
 
 import (
-	"broker/event"
 	"broker/ports"
-	"encoding/json"
-
-	amqp "github.com/rabbitmq/amqp091-go"
+	"net/rpc"
 )
 
 type loggerRepository struct {
-	Rabbit *amqp.Connection
 }
 
-type logPayload struct {
-	Name string `json:"name"`
-	Data string `json:"data"`
+type RPCPayload struct {
+	Name string
+	Data string
 }
 
-func NewLoggerRepository(rabbitConn *amqp.Connection) *loggerRepository {
-	return &loggerRepository{
-		Rabbit: rabbitConn,
-	}
+func NewLoggerRepository() *loggerRepository {
+	return &loggerRepository{}
 }
 
-func (l *loggerRepository) Log(toLog ports.Log) error {
-	emitter, err := event.NewEventEmitter(l.Rabbit)
+func (l *loggerRepository) Log(toLog ports.Log) (string, error) {
+	client, err := rpc.Dial("tcp", "logger-service:5001")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	payload := formatLogPayload(toLog)
+	payload := RPCPayload{
+		Name: toLog.Name,
+		Data: toLog.Data,
+	}
 
-	err = emitter.Push(payload, "log.INFO")
+	var result string
+	err = client.Call("RPCServer.LogInfo", payload, &result)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
-}
-
-func formatLogPayload(toLog ports.Log) string {
-	payload := logPayload(toLog)
-
-	j, _ := json.MarshalIndent(&payload, "", "\t")
-
-	return string(j)
+	return result, nil
 }
