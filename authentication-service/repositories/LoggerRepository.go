@@ -22,8 +22,7 @@ func (r *loggerRepository) Log(toLog ports.Log) error {
 		return err
 	}
 
-	var replyFromCall string
-	err = client.Call("RPCServer.LogInfo", payload(toLog), &replyFromCall)
+	err = client.Call("RPCServer.LogInfo", payload(toLog), nil)
 	if err != nil {
 		return err
 	}
