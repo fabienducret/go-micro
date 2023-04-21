@@ -23,5 +23,7 @@ func connectToMongo() (*mongo.Client, error) {
 		return nil, err
 	}
 
+	log.Println("Starting mongodb on url", mongoUrl)
+
 	return c, nil
 }

@@ -1,17 +1,17 @@
 package main
 
-type RPCServer struct {
+type Server struct {
 	Mailer Mail
 }
 
-type RPCPayload struct {
+type Payload struct {
 	From    string
 	To      string
 	Subject string
 	Message string
 }
 
-func (r *RPCServer) SendMail(payload RPCPayload, resp *string) error {
+func (r *Server) SendMail(payload Payload, resp *string) error {
 	msg := Message{
 		From:    payload.From,
 		To:      payload.To,

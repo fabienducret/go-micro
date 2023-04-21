@@ -21,7 +21,6 @@ type Config struct {
 }
 
 func main() {
-
 	app := Config{
 		Container: Container{
 			AuthenticationServiceRepository: repositories.NewAuthenticateServiceRepository(),

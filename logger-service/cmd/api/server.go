@@ -6,16 +6,16 @@ import (
 	"time"
 )
 
-type RPCServer struct {
+type Server struct {
 	models data.Models
 }
 
-type RPCPayload struct {
+type Payload struct {
 	Name string
 	Data string
 }
 
-func (r *RPCServer) LogInfo(payload RPCPayload, resp *string) error {
+func (r *Server) LogInfo(payload Payload, resp *string) error {
 	err := r.models.LogEntry.Insert(data.LogEntry{
 		Name:      payload.Name,
 		Data:      payload.Data,
@@ -27,7 +27,7 @@ func (r *RPCServer) LogInfo(payload RPCPayload, resp *string) error {
 		return err
 	}
 
-	*resp = "Processed payload via RPC:" + payload.Name
+	*resp = "Log handled for:" + payload.Name
 
 	return nil
 }

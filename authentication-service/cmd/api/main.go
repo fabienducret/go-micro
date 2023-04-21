@@ -14,7 +14,7 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-const rpcPort = "5001"
+const port = "5001"
 
 type Config struct {
 	DB     *sql.DB
@@ -24,7 +24,6 @@ type Config struct {
 func main() {
 	log.Println("Starting authentication service")
 
-	// Connect to DB
 	conn := connectToDB()
 	if conn == nil {
 		log.Panic("Can't connect to Postgres")
@@ -39,14 +38,14 @@ func main() {
 }
 
 func (app *Config) startServer() {
-	rpcServer := new(RPCServer)
-	rpcServer.Models = app.Models
-	rpcServer.LoggerRepository = repositories.NewLoggerRepository()
+	server := new(Server)
+	server.Models = app.Models
+	server.LoggerRepository = repositories.NewLoggerRepository()
 
-	_ = rpc.Register(rpcServer)
+	_ = rpc.Register(server)
 
-	log.Println("Starting RPC server on port ", rpcPort)
-	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	log.Println("Starting RPC server on port ", port)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))
 	defer listen.Close()
 
 	for {

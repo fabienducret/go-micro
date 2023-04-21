@@ -7,12 +7,12 @@ import (
 	"fmt"
 )
 
-type RPCServer struct {
+type Server struct {
 	Models           data.Models
 	LoggerRepository ports.Logger
 }
 
-type RPCPayload struct {
+type Payload struct {
 	Email    string
 	Password string
 }
@@ -21,7 +21,7 @@ type Response struct {
 	Data any
 }
 
-func (r *RPCServer) Authenticate(payload RPCPayload, resp *string) error {
+func (r *Server) Authenticate(payload Payload, resp *string) error {
 	user, err := r.Models.User.GetByEmail(payload.Email)
 	if err != nil {
 		return errors.New("invalid credentials")

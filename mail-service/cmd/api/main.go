@@ -13,24 +13,26 @@ type Config struct {
 	Mailer Mail
 }
 
-const rpcPort = "5001"
+const port = "5001"
 
 func main() {
+	log.Println("Starting mail service")
+
 	app := Config{
 		Mailer: createMail(),
 	}
 
-	app.startServer()
+	app.listen()
 }
 
-func (app *Config) startServer() {
-	rpcServer := new(RPCServer)
-	rpcServer.Mailer = app.Mailer
+func (app *Config) listen() {
+	server := new(Server)
+	server.Mailer = app.Mailer
 
-	_ = rpc.Register(rpcServer)
+	_ = rpc.Register(server)
 
-	log.Println("Starting RPC server on port ", rpcPort)
-	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	log.Println("Starting RPC server on port ", port)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))
 	defer listen.Close()
 
 	for {

@@ -25,7 +25,7 @@ func (r *mailerRepository) Send(mail ports.Mail) (string, error) {
 	}
 
 	var replyFromCall string
-	err = client.Call("RPCServer.SendMail", mailPayload(mail), &replyFromCall)
+	err = client.Call("Server.SendMail", mailPayload(mail), &replyFromCall)
 	if err != nil {
 		return "", err
 	}

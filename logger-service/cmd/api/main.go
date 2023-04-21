@@ -10,13 +10,15 @@ import (
 	"time"
 )
 
-const rpcPort = "5001"
+const port = "5001"
 
 type Config struct {
 	Models data.Models
 }
 
 func main() {
+	log.Println("Starting logger service")
+
 	client, err := connectToMongo()
 	if err != nil {
 		log.Panic(err)
@@ -35,17 +37,17 @@ func main() {
 		Models: data.New(client),
 	}
 
-	app.startServer()
+	app.listen()
 }
 
-func (app *Config) startServer() {
-	rpcServer := new(RPCServer)
-	rpcServer.models = app.Models
+func (app *Config) listen() {
+	server := new(Server)
+	server.models = app.Models
 
-	_ = rpc.Register(rpcServer)
+	_ = rpc.Register(server)
 
-	log.Println("Starting RPC server on port ", rpcPort)
-	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	log.Println("Starting RPC server on port ", port)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))
 	defer listen.Close()
 
 	for {

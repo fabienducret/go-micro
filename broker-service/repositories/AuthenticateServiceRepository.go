@@ -23,7 +23,7 @@ func (a authenticateServiceRepository) AuthenticateWith(credentials ports.Creden
 	}
 
 	var replyFromCall string
-	err = client.Call("RPCServer.Authenticate", authPayload(credentials), &replyFromCall)
+	err = client.Call("Server.Authenticate", authPayload(credentials), &replyFromCall)
 	if err != nil {
 		return "", err
 	}
