@@ -42,14 +42,20 @@ func (app *Config) startServer() {
 	server.Models = app.Models
 	server.LoggerRepository = repositories.NewLoggerRepository()
 
-	_ = rpc.Register(server)
+	err := rpc.Register(server)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	log.Println("Starting RPC server on port ", port)
-	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))
-	defer listen.Close()
+	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer listener.Close()
 
 	for {
-		rpcConn, err := listen.Accept()
+		rpcConn, err := listener.Accept()
 		if err != nil {
 			continue
 		}
