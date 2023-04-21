@@ -7,11 +7,6 @@ import (
 	"time"
 )
 
-const (
-	rpcPort  = "5001"
-	mongoUrl = "mongodb://mongo:27017"
-)
-
 type Config struct {
 	Models data.Models
 }

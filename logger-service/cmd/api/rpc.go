@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const rpcPort = "5001"
+
 type RPCServer struct {
 	models data.Models
 }
