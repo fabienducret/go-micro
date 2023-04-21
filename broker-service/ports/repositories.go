@@ -17,13 +17,8 @@ type Mail struct {
 	Message string
 }
 
-type AuthenticateResponse struct {
-	Error bool
-	Data  any
-}
-
 type AuthenticationService interface {
-	AuthenticateWith(Credentials) (*AuthenticateResponse, error)
+	AuthenticateWith(Credentials) (string, error)
 }
 
 type Logger interface {
@@ -31,5 +26,5 @@ type Logger interface {
 }
 
 type Mailer interface {
-	Send(Mail) error
+	Send(Mail) (string, error)
 }

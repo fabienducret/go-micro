@@ -2,7 +2,6 @@ package main
 
 import (
 	"broker/ports"
-	"errors"
 )
 
 func Authenticate(asr ports.AuthenticationService, payload ports.AuthPayload) (*jsonResponse, error) {
@@ -13,17 +12,13 @@ func Authenticate(asr ports.AuthenticationService, payload ports.AuthPayload) (*
 		return nil, err
 	}
 
-	if response.Error {
-		return nil, errors.New("error in authenticate response")
-	}
-
-	return authenticatedPayload(response.Data), nil
+	return authenticatedPayload(response), nil
 }
 
-func authenticatedPayload(data any) *jsonResponse {
+func authenticatedPayload(response string) *jsonResponse {
 	return &jsonResponse{
 		Error:   false,
 		Message: "Authenticated !",
-		Data:    data,
+		Data:    response,
 	}
 }

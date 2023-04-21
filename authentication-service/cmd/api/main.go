@@ -2,30 +2,23 @@ package main
 
 import (
 	"authentication/data"
-	"authentication/ports"
 	"authentication/repositories"
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"time"
+	"net"
+	"net/rpc"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-const webPort = "80"
-
-type Container struct {
-	LoggerRepository ports.Logger
-}
+const rpcPort = "5001"
 
 type Config struct {
-	Container Container
-	DB        *sql.DB
-	Models    data.Models
+	DB     *sql.DB
+	Models data.Models
 }
 
 func main() {
@@ -38,59 +31,29 @@ func main() {
 	}
 
 	app := Config{
-		Container: Container{
-			LoggerRepository: repositories.NewLoggerRepository(),
-		},
 		DB:     conn,
 		Models: data.New(conn),
 	}
 
-	srv := http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
-
-	err := srv.ListenAndServe()
-	if err != nil {
-		log.Panic(err)
-	}
+	app.startServer()
 }
 
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		return nil, err
-	}
+func (app *Config) startServer() {
+	rpcServer := new(RPCServer)
+	rpcServer.Models = app.Models
+	rpcServer.LoggerRepository = repositories.NewLoggerRepository()
 
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
+	_ = rpc.Register(rpcServer)
 
-	return db, nil
-}
-
-func connectToDB() *sql.DB {
-	dsn := os.Getenv("DSN")
-	var counts int64
+	log.Println("Starting RPC server on port ", rpcPort)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	defer listen.Close()
 
 	for {
-		connection, err := openDB(dsn)
+		rpcConn, err := listen.Accept()
 		if err != nil {
-			log.Println("Postgres not yet ready...")
-			counts++
-		} else {
-			log.Println("Connected to Postgres")
-			return connection
+			continue
 		}
-
-		if counts > 10 {
-			log.Println(err)
-			return nil
-		}
-
-		log.Println("Backing off for 2 seconds...")
-		time.Sleep(2 * time.Second)
-		continue
+		go rpc.ServeConn(rpcConn)
 	}
 }

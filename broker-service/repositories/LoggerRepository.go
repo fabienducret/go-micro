@@ -8,7 +8,7 @@ import (
 type loggerRepository struct {
 }
 
-type payload struct {
+type logPayload struct {
 	Name string
 	Data string
 }
@@ -24,7 +24,7 @@ func (l *loggerRepository) Log(toLog ports.Log) (string, error) {
 	}
 
 	var replyFromCall string
-	err = client.Call("RPCServer.LogInfo", payload(toLog), &replyFromCall)
+	err = client.Call("RPCServer.LogInfo", logPayload(toLog), &replyFromCall)
 	if err != nil {
 		return "", err
 	}

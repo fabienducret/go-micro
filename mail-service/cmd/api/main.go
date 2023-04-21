@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
+	"net"
+	"net/rpc"
 	"os"
 	"strconv"
 )
@@ -12,23 +13,32 @@ type Config struct {
 	Mailer Mail
 }
 
-const webPort = "80"
+const rpcPort = "5001"
 
 func main() {
 	app := Config{
 		Mailer: createMail(),
 	}
 
-	log.Println("Starting new service on port", webPort)
+	app.startServer()
+}
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
+func (app *Config) startServer() {
+	rpcServer := new(RPCServer)
+	rpcServer.Mailer = app.Mailer
 
-	err := srv.ListenAndServe()
-	if err != nil {
-		log.Panic(err)
+	_ = rpc.Register(rpcServer)
+
+	log.Println("Starting RPC server on port ", rpcPort)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	defer listen.Close()
+
+	for {
+		rpcConn, err := listen.Accept()
+		if err != nil {
+			continue
+		}
+		go rpc.ServeConn(rpcConn)
 	}
 }
 

@@ -7,17 +7,17 @@ import (
 func SendMail(mr ports.Mailer, payload ports.MailPayload) (*jsonResponse, error) {
 	mail := ports.Mail(payload)
 
-	err := mr.Send(mail)
+	reply, err := mr.Send(mail)
 	if err != nil {
 		return nil, err
 	}
 
-	return mailSentPayload(mail.To), nil
+	return mailSentPayload(reply), nil
 }
 
-func mailSentPayload(to string) *jsonResponse {
+func mailSentPayload(reply string) *jsonResponse {
 	return &jsonResponse{
 		Error:   false,
-		Message: "Message sent to " + to,
+		Message: reply,
 	}
 }

@@ -2,10 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log-service/data"
+	"net"
+	"net/rpc"
 	"time"
 )
+
+const rpcPort = "5001"
 
 type Config struct {
 	Models data.Models
@@ -31,4 +36,23 @@ func main() {
 	}
 
 	app.startServer()
+}
+
+func (app *Config) startServer() {
+	rpcServer := new(RPCServer)
+	rpcServer.models = app.Models
+
+	_ = rpc.Register(rpcServer)
+
+	log.Println("Starting RPC server on port ", rpcPort)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	defer listen.Close()
+
+	for {
+		rpcConn, err := listen.Accept()
+		if err != nil {
+			continue
+		}
+		go rpc.ServeConn(rpcConn)
+	}
 }

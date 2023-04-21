@@ -2,60 +2,33 @@ package repositories
 
 import (
 	"broker/ports"
-	"bytes"
-	"encoding/json"
-	"errors"
-	"net/http"
+	"net/rpc"
 )
 
 type mailPayload struct {
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Message string `json:"message"`
+	From    string
+	To      string
+	Subject string
+	Message string
 }
 
 type mailerRepository struct{}
-
-const mailServiceUrl = "http://mail-service/send"
 
 func NewMailerRepository() *mailerRepository {
 	return &mailerRepository{}
 }
 
-func (r *mailerRepository) Send(mail ports.Mail) error {
-	toSend := formatMailRequest(mail)
-
-	request, err := http.NewRequest("POST", mailServiceUrl, toSend)
+func (r *mailerRepository) Send(mail ports.Mail) (string, error) {
+	client, err := rpc.Dial("tcp", "mail-service:5001")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	request.Header.Set("Content-Type", "application/json")
-
-	client := http.Client{}
-	response, err := client.Do(request)
+	var replyFromCall string
+	err = client.Call("RPCServer.SendMail", mailPayload(mail), &replyFromCall)
 	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusAccepted {
-		return errors.New("error calling mail service")
+		return "", err
 	}
 
-	return nil
-}
-
-func formatMailRequest(mail ports.Mail) *bytes.Buffer {
-	toSend := mailPayload{
-		From:    mail.From,
-		To:      mail.To,
-		Subject: mail.Subject,
-		Message: mail.Message,
-	}
-
-	jsonData, _ := json.MarshalIndent(toSend, "", "\t")
-
-	return bytes.NewBuffer(jsonData)
+	return replyFromCall, nil
 }
