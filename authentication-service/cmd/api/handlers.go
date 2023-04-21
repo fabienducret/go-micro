@@ -2,6 +2,7 @@ package main
 
 import (
 	"authentication/data"
+	"authentication/ports"
 	"errors"
 	"fmt"
 	"net/http"
@@ -32,7 +33,11 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	lr := app.Container.LoggerRepository
-	err = lr.Log("authentication", fmt.Sprintf("%s logged in", user.Email))
+	toLog := ports.Log{
+		Name: "authentication",
+		Data: fmt.Sprintf("%s logged in", user.Email),
+	}
+	err = lr.Log(toLog)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

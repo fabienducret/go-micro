@@ -1,12 +1,14 @@
 package repositories
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
+	"authentication/ports"
+	"net/rpc"
 )
 
-const logServiceURL = "http://logger-service/log"
+type payload struct {
+	Name string
+	Data string
+}
 
 type loggerRepository struct{}
 
@@ -14,33 +16,17 @@ func NewLoggerRepository() *loggerRepository {
 	return &loggerRepository{}
 }
 
-func (r *loggerRepository) Log(name, data string) error {
-	toSend := formatLoggerRequest(name, data)
-
-	request, err := http.NewRequest("POST", logServiceURL, toSend)
+func (r *loggerRepository) Log(toLog ports.Log) error {
+	client, err := rpc.Dial("tcp", "logger-service:5001")
 	if err != nil {
 		return err
 	}
 
-	client := &http.Client{}
-	_, err = client.Do(request)
+	var replyFromCall string
+	err = client.Call("RPCServer.LogInfo", payload(toLog), &replyFromCall)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func formatLoggerRequest(name, data string) *bytes.Buffer {
-	var entry struct {
-		Name string `json:"name"`
-		Data string `json:"data"`
-	}
-
-	entry.Name = name
-	entry.Data = data
-
-	jsonData, _ := json.MarshalIndent(entry, "", "\t")
-
-	return bytes.NewBuffer(jsonData)
 }

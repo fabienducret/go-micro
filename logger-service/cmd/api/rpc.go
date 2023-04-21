@@ -1,13 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log-service/data"
+	"net"
+	"net/rpc"
 	"time"
 )
 
 type RPCServer struct {
-	models *data.Models
+	models data.Models
 }
 
 type RPCPayload struct {
@@ -30,4 +33,23 @@ func (r *RPCServer) LogInfo(payload RPCPayload, resp *string) error {
 	*resp = "Processed payload via RPC:" + payload.Name
 
 	return nil
+}
+
+func (app *Config) startServer() {
+	rpcServer := new(RPCServer)
+	rpcServer.models = app.Models
+
+	_ = rpc.Register(rpcServer)
+
+	log.Println("Starting RPC server on port ", rpcPort)
+	listen, _ := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	defer listen.Close()
+
+	for {
+		rpcConn, err := listen.Accept()
+		if err != nil {
+			continue
+		}
+		go rpc.ServeConn(rpcConn)
+	}
 }
