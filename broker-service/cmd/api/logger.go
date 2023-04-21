@@ -7,17 +7,17 @@ import (
 func Log(lr ports.Logger, payload ports.LogPayload) (*jsonResponse, error) {
 	entry := ports.Log(payload)
 
-	result, err := lr.Log(entry)
+	reply, err := lr.Log(entry)
 	if err != nil {
 		return nil, err
 	}
 
-	return logSentPayload(result), nil
+	return logSentPayload(reply), nil
 }
 
-func logSentPayload(result string) *jsonResponse {
+func logSentPayload(reply string) *jsonResponse {
 	return &jsonResponse{
 		Error:   false,
-		Message: result,
+		Message: reply,
 	}
 }
