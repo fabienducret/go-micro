@@ -17,10 +17,6 @@ type Payload struct {
 	Password string
 }
 
-type Response struct {
-	Data any
-}
-
 func (r *Server) Authenticate(payload Payload, resp *string) error {
 	user, err := r.Models.User.GetByEmail(payload.Email)
 	if err != nil {
