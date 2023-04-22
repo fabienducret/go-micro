@@ -5,6 +5,8 @@ import (
 	"net/rpc"
 )
 
+const loggerServiceAddress = "logger-service:5001"
+
 type payload struct {
 	Name string
 	Data string
@@ -17,7 +19,7 @@ func NewLoggerRepository() *loggerRepository {
 }
 
 func (r *loggerRepository) Log(toLog ports.Log) error {
-	client, err := rpc.Dial("tcp", "logger-service:5001")
+	client, err := rpc.Dial("tcp", loggerServiceAddress)
 	if err != nil {
 		return err
 	}

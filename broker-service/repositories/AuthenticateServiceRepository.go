@@ -5,6 +5,8 @@ import (
 	"net/rpc"
 )
 
+const authenticateServiceAddress = "authentication-service:5001"
+
 type authPayload struct {
 	Email    string
 	Password string
@@ -17,7 +19,7 @@ func NewAuthenticateServiceRepository() *authenticateServiceRepository {
 }
 
 func (a authenticateServiceRepository) AuthenticateWith(credentials ports.Credentials) (string, error) {
-	client, err := rpc.Dial("tcp", "authentication-service:5001")
+	client, err := rpc.Dial("tcp", authenticateServiceAddress)
 	if err != nil {
 		return "", err
 	}
