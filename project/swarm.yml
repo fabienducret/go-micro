@@ -2,17 +2,13 @@ version: '3'
 
 services:
   broker-service:
-    image: fabienducret/broker-service:1.0.0
-    ports:
-      - '8080:80'
+    image: fabienducret/broker-service:1.0.1
     deploy:
       mode: replicated
       replicas: 1
 
   authentication-service:
     image: fabienducret/authentication-service:1.0.0
-    ports:
-      - '8081:80'
     deploy:
       mode: replicated
       replicas: 1
