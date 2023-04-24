@@ -17,7 +17,13 @@ type Payload struct {
 	Password string
 }
 
-func (r *Server) Authenticate(payload Payload, resp *string) error {
+type Identity struct {
+	Email     string
+	FirstName string
+	LastName  string
+}
+
+func (r *Server) Authenticate(payload Payload, reply *Identity) error {
 	user, err := r.Models.User.GetByEmail(payload.Email)
 	if err != nil {
 		return errors.New("invalid credentials")
@@ -37,7 +43,11 @@ func (r *Server) Authenticate(payload Payload, resp *string) error {
 		return err
 	}
 
-	*resp = fmt.Sprintf("%s logged", user.Email)
+	*reply = Identity{
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
 
 	return nil
 }

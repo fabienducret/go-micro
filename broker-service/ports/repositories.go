@@ -17,8 +17,14 @@ type Mail struct {
 	Message string
 }
 
+type Identity struct {
+	Email     string
+	FirstName string
+	LastName  string
+}
+
 type AuthenticationService interface {
-	AuthenticateWith(Credentials) (string, error)
+	AuthenticateWith(Credentials) (*Identity, error)
 }
 
 type Logger interface {

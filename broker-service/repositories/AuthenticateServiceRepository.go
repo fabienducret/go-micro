@@ -18,17 +18,17 @@ func NewAuthenticateServiceRepository() *authenticateServiceRepository {
 	return &authenticateServiceRepository{}
 }
 
-func (a authenticateServiceRepository) AuthenticateWith(credentials ports.Credentials) (string, error) {
+func (a authenticateServiceRepository) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
 	client, err := rpc.Dial("tcp", authenticateServiceAddress)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	var replyFromCall string
-	err = client.Call("Server.Authenticate", authPayload(credentials), &replyFromCall)
+	var identity *ports.Identity
+	err = client.Call("Server.Authenticate", authPayload(credentials), &identity)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return replyFromCall, nil
+	return identity, nil
 }
