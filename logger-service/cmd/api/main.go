@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log-service/data"
+	"log-service/repositories"
 	"net"
 	"net/rpc"
 	"time"
@@ -13,7 +13,6 @@ import (
 const port = "5001"
 
 type Config struct {
-	Models data.Models
 }
 
 func main() {
@@ -33,17 +32,13 @@ func main() {
 		}
 	}()
 
-	app := Config{
-		Models: data.New(client),
-	}
+	server := new(Server)
+	server.LogRepository = repositories.NewMongoRepository(client)
 
-	app.listen()
+	listen(server)
 }
 
-func (app *Config) listen() {
-	server := new(Server)
-	server.models = app.Models
-
+func listen(server *Server) {
 	err := rpc.Register(server)
 	if err != nil {
 		log.Fatal(err)

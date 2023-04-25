@@ -2,12 +2,11 @@ package main
 
 import (
 	"log"
-	"log-service/data"
-	"time"
+	"log-service/ports"
 )
 
 type Server struct {
-	models data.Models
+	LogRepository ports.LogRepository
 }
 
 type Payload struct {
@@ -16,10 +15,9 @@ type Payload struct {
 }
 
 func (r *Server) LogInfo(payload Payload, resp *string) error {
-	err := r.models.LogEntry.Insert(data.LogEntry{
-		Name:      payload.Name,
-		Data:      payload.Data,
-		CreatedAt: time.Now(),
+	err := r.LogRepository.Insert(ports.LogEntry{
+		Name: payload.Name,
+		Data: payload.Data,
 	})
 
 	if err != nil {
