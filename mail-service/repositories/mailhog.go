@@ -60,12 +60,12 @@ func (r *MailhogRepository) SendSMTPMessage(msg ports.Message) error {
 
 	msg.DataMap = data
 
-	formattedMessage, err := r.buildHTMLMessage(msg)
+	formattedMessage, err := buildHTMLMessage(msg)
 	if err != nil {
 		return err
 	}
 
-	plainMessage, err := r.buildPlainTextMessage(msg)
+	plainMessage, err := buildPlainTextMessage(msg)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (r *MailhogRepository) SendSMTPMessage(msg ports.Message) error {
 	server.Port = r.mailer.Port
 	server.Username = r.mailer.Username
 	server.Password = r.mailer.Password
-	server.Encryption = r.getEncryption(r.mailer.Encryption)
+	server.Encryption = getEncryption(r.mailer.Encryption)
 	server.KeepAlive = false
 	server.ConnectTimeout = 10 * time.Second
 	server.SendTimeout = 10 * time.Second
@@ -104,7 +104,7 @@ func (r *MailhogRepository) SendSMTPMessage(msg ports.Message) error {
 	return nil
 }
 
-func (r *MailhogRepository) buildHTMLMessage(msg ports.Message) (string, error) {
+func buildHTMLMessage(msg ports.Message) (string, error) {
 	templateToRender := "./templates/mail.html.gohtml"
 
 	t, err := template.New("email-html").ParseFiles(templateToRender)
@@ -118,7 +118,7 @@ func (r *MailhogRepository) buildHTMLMessage(msg ports.Message) (string, error) 
 	}
 
 	formattedMessage := tpl.String()
-	formattedMessage, err = r.inlineCSS(formattedMessage)
+	formattedMessage, err = inlineCSS(formattedMessage)
 	if err != nil {
 		return "", err
 	}
@@ -126,7 +126,7 @@ func (r *MailhogRepository) buildHTMLMessage(msg ports.Message) (string, error) 
 	return formattedMessage, nil
 }
 
-func (r *MailhogRepository) buildPlainTextMessage(msg ports.Message) (string, error) {
+func buildPlainTextMessage(msg ports.Message) (string, error) {
 	templateToRender := "./templates/mail.plain.gohtml"
 
 	t, err := template.New("email-plain").ParseFiles(templateToRender)
@@ -144,7 +144,7 @@ func (r *MailhogRepository) buildPlainTextMessage(msg ports.Message) (string, er
 	return plainMessage, nil
 }
 
-func (r *MailhogRepository) inlineCSS(s string) (string, error) {
+func inlineCSS(s string) (string, error) {
 	options := premailer.Options{
 		RemoveClasses:     false,
 		CssToAttributes:   false,
@@ -164,7 +164,7 @@ func (r *MailhogRepository) inlineCSS(s string) (string, error) {
 	return html, nil
 }
 
-func (r *MailhogRepository) getEncryption(s string) mail.Encryption {
+func getEncryption(s string) mail.Encryption {
 	switch s {
 	case "tls":
 		return mail.EncryptionSTARTTLS
