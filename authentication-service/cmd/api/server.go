@@ -1,14 +1,13 @@
 package main
 
 import (
-	"authentication/data"
 	"authentication/ports"
 	"errors"
 	"fmt"
 )
 
 type Server struct {
-	Models           data.Models
+	UserRepository   ports.UserRepository
 	LoggerRepository ports.Logger
 }
 
@@ -24,12 +23,12 @@ type Identity struct {
 }
 
 func (r *Server) Authenticate(payload Payload, reply *Identity) error {
-	user, err := r.Models.User.GetByEmail(payload.Email)
+	user, err := r.UserRepository.GetByEmail(payload.Email)
 	if err != nil {
 		return errors.New("invalid credentials")
 	}
 
-	valid, err := user.PasswordMatches(payload.Password)
+	valid, err := r.UserRepository.PasswordMatches(*user, payload.Password)
 	if err != nil || !valid {
 		return errors.New("invalid credentials")
 	}

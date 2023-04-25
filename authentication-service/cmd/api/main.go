@@ -3,7 +3,6 @@ package main
 import (
 	"authentication/data"
 	"authentication/repositories"
-	"database/sql"
 	"fmt"
 	"log"
 	"net"
@@ -17,8 +16,6 @@ import (
 const port = "5001"
 
 type Config struct {
-	DB     *sql.DB
-	Models data.Models
 }
 
 func main() {
@@ -29,19 +26,14 @@ func main() {
 		log.Panic("Can't connect to Postgres")
 	}
 
-	app := Config{
-		DB:     conn,
-		Models: data.New(conn),
-	}
-
-	app.startServer()
-}
-
-func (app *Config) startServer() {
 	server := new(Server)
-	server.Models = app.Models
+	server.UserRepository = data.NewPostgresRepository(conn)
 	server.LoggerRepository = repositories.NewLoggerRepository()
 
+	start(server)
+}
+
+func start(server *Server) {
 	err := rpc.Register(server)
 	if err != nil {
 		log.Fatal(err)

@@ -5,6 +5,18 @@ type Log struct {
 	Data string
 }
 
+type User struct {
+	Email     string
+	FirstName string
+	LastName  string
+	Password  string
+}
+
 type Logger interface {
 	Log(Log) error
+}
+
+type UserRepository interface {
+	GetByEmail(email string) (*User, error)
+	PasswordMatches(u User, plainText string) (bool, error)
 }
