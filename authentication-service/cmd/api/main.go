@@ -29,10 +29,10 @@ func main() {
 	server.UserRepository = repositories.NewPostgresRepository(conn)
 	server.LoggerRepository = repositories.NewLoggerRepository()
 
-	start(server)
+	listen(server)
 }
 
-func start(server *Server) {
+func listen(server *Server) {
 	err := rpc.Register(server)
 	if err != nil {
 		log.Fatal(err)
