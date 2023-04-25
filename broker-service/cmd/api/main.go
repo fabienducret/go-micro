@@ -16,12 +16,12 @@ type Container struct {
 	MailerRepository                ports.Mailer
 }
 
-type Config struct {
+type App struct {
 	Container Container
 }
 
 func main() {
-	app := Config{
+	app := App{
 		Container: Container{
 			AuthenticationServiceRepository: repositories.NewAuthenticateServiceRepository(),
 			LoggerRepository:                repositories.NewLoggerRepository(),
@@ -31,12 +31,16 @@ func main() {
 
 	log.Printf("Starting broker service on port %s\n", webPort)
 
-	srv := &http.Server{
+	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
-	err := srv.ListenAndServe()
+	start(server)
+}
+
+func start(server *http.Server) {
+	err := server.ListenAndServe()
 	if err != nil {
 		log.Panic(err)
 	}

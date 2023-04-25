@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
+func (app *App) Broker(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, jsonResponse{
 		Error:   false,
 		Message: "Hit the broker",
 	})
 }
 
-func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
+func (app *App) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	var requestPayload ports.RequestPayload
 
 	err := app.readJSON(w, r, &requestPayload)
@@ -34,7 +34,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *Config) handleAuthenticate(w http.ResponseWriter, requestPayload ports.RequestPayload) {
+func (app *App) handleAuthenticate(w http.ResponseWriter, requestPayload ports.RequestPayload) {
 	asr := app.Container.AuthenticationServiceRepository
 	reply, err := asr.AuthenticateWith(ports.Credentials(requestPayload.Auth))
 	if err != nil {
@@ -49,7 +49,7 @@ func (app *Config) handleAuthenticate(w http.ResponseWriter, requestPayload port
 	})
 }
 
-func (app *Config) handleLog(w http.ResponseWriter, requestPayload ports.RequestPayload) {
+func (app *App) handleLog(w http.ResponseWriter, requestPayload ports.RequestPayload) {
 	lr := app.Container.LoggerRepository
 	reply, err := lr.Log(ports.Log(requestPayload.Log))
 	if err != nil {
@@ -63,7 +63,7 @@ func (app *Config) handleLog(w http.ResponseWriter, requestPayload ports.Request
 	})
 }
 
-func (app *Config) handleMail(w http.ResponseWriter, requestPayload ports.RequestPayload) {
+func (app *App) handleMail(w http.ResponseWriter, requestPayload ports.RequestPayload) {
 	mr := app.Container.MailerRepository
 	reply, err := mr.Send(ports.Mail(requestPayload.Mail))
 	if err != nil {

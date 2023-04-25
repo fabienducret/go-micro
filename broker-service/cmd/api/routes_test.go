@@ -8,7 +8,7 @@ import (
 )
 
 func Test_routes_exists(t *testing.T) {
-	testApp := Config{}
+	testApp := App{}
 
 	testRoutes := testApp.routes()
 	chiRoutes := testRoutes.(chi.Router)
