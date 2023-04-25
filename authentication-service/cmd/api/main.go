@@ -14,9 +14,6 @@ import (
 
 const port = "5001"
 
-type Config struct {
-}
-
 func main() {
 	log.Println("Starting authentication service")
 

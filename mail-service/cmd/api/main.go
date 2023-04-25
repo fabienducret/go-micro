@@ -8,8 +8,6 @@ import (
 	"net/rpc"
 )
 
-type Config struct{}
-
 const port = "5001"
 
 func main() {
