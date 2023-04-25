@@ -1,7 +1,6 @@
 package main
 
 import (
-	"authentication/data"
 	"authentication/repositories"
 	"fmt"
 	"log"
@@ -27,7 +26,7 @@ func main() {
 	}
 
 	server := new(Server)
-	server.UserRepository = data.NewPostgresRepository(conn)
+	server.UserRepository = repositories.NewPostgresRepository(conn)
 	server.LoggerRepository = repositories.NewLoggerRepository()
 
 	start(server)
