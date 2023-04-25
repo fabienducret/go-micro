@@ -1,15 +1,18 @@
-package main
+package repositories
 
 import (
 	"bytes"
 	"html/template"
+	"mailer-service/ports"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/vanng822/go-premailer/premailer"
 	mail "github.com/xhit/go-simple-mail/v2"
 )
 
-type Mail struct {
+type Mailer struct {
 	Domain      string
 	Host        string
 	Port        int
@@ -20,23 +23,35 @@ type Mail struct {
 	FromName    string
 }
 
-type Message struct {
-	From        string
-	FromName    string
-	To          string
-	Subject     string
-	Attachments []string
-	Data        any
-	DataMap     map[string]any
+type MailhogRepository struct {
+	mailer Mailer
 }
 
-func (m *Mail) SendSMTPMessage(msg Message) error {
+func NewMailhogRepository() *MailhogRepository {
+	port, _ := strconv.Atoi(os.Getenv("MAIL_PORT"))
+	m := Mailer{
+		Domain:      os.Getenv("MAIL_DOMAIN"),
+		Host:        os.Getenv("MAIL_HOST"),
+		Port:        port,
+		Username:    os.Getenv("MAIL_USERNAME"),
+		Password:    os.Getenv("MAIL_PASSWORD"),
+		Encryption:  os.Getenv("MAIL_ENCRYPTION"),
+		FromName:    os.Getenv("FROM_NAME"),
+		FromAddress: os.Getenv("FROM_ADDRESS"),
+	}
+
+	return &MailhogRepository{
+		mailer: m,
+	}
+}
+
+func (r *MailhogRepository) SendSMTPMessage(msg ports.Message) error {
 	if msg.From == "" {
-		msg.From = m.FromAddress
+		msg.From = r.mailer.FromAddress
 	}
 
 	if msg.FromName == "" {
-		msg.FromName = m.FromName
+		msg.FromName = r.mailer.FromName
 	}
 
 	data := map[string]any{
@@ -45,22 +60,22 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 	msg.DataMap = data
 
-	formattedMessage, err := m.buildHTMLMessage(msg)
+	formattedMessage, err := r.buildHTMLMessage(msg)
 	if err != nil {
 		return err
 	}
 
-	plainMessage, err := m.buildPlainTextMessage(msg)
+	plainMessage, err := r.buildPlainTextMessage(msg)
 	if err != nil {
 		return err
 	}
 
 	server := mail.NewSMTPClient()
-	server.Host = m.Host
-	server.Port = m.Port
-	server.Username = m.Username
-	server.Password = m.Password
-	server.Encryption = m.getEncryption(m.Encryption)
+	server.Host = r.mailer.Host
+	server.Port = r.mailer.Port
+	server.Username = r.mailer.Username
+	server.Password = r.mailer.Password
+	server.Encryption = r.getEncryption(r.mailer.Encryption)
 	server.KeepAlive = false
 	server.ConnectTimeout = 10 * time.Second
 	server.SendTimeout = 10 * time.Second
@@ -89,7 +104,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	return nil
 }
 
-func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
+func (r *MailhogRepository) buildHTMLMessage(msg ports.Message) (string, error) {
 	templateToRender := "./templates/mail.html.gohtml"
 
 	t, err := template.New("email-html").ParseFiles(templateToRender)
@@ -103,7 +118,7 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	}
 
 	formattedMessage := tpl.String()
-	formattedMessage, err = m.inlineCSS(formattedMessage)
+	formattedMessage, err = r.inlineCSS(formattedMessage)
 	if err != nil {
 		return "", err
 	}
@@ -111,7 +126,7 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	return formattedMessage, nil
 }
 
-func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
+func (r *MailhogRepository) buildPlainTextMessage(msg ports.Message) (string, error) {
 	templateToRender := "./templates/mail.plain.gohtml"
 
 	t, err := template.New("email-plain").ParseFiles(templateToRender)
@@ -129,7 +144,7 @@ func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 	return plainMessage, nil
 }
 
-func (m *Mail) inlineCSS(s string) (string, error) {
+func (r *MailhogRepository) inlineCSS(s string) (string, error) {
 	options := premailer.Options{
 		RemoveClasses:     false,
 		CssToAttributes:   false,
@@ -149,7 +164,7 @@ func (m *Mail) inlineCSS(s string) (string, error) {
 	return html, nil
 }
 
-func (m *Mail) getEncryption(s string) mail.Encryption {
+func (r *MailhogRepository) getEncryption(s string) mail.Encryption {
 	switch s {
 	case "tls":
 		return mail.EncryptionSTARTTLS

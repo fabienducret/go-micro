@@ -1,7 +1,9 @@
 package main
 
+import "mailer-service/ports"
+
 type Server struct {
-	Mailer Mail
+	MailerRepository ports.MailRepository
 }
 
 type Payload struct {
@@ -12,14 +14,14 @@ type Payload struct {
 }
 
 func (r *Server) SendMail(payload Payload, resp *string) error {
-	msg := Message{
+	msg := ports.Message{
 		From:    payload.From,
 		To:      payload.To,
 		Subject: payload.Subject,
 		Data:    payload.Message,
 	}
 
-	err := r.Mailer.SendSMTPMessage(msg)
+	err := r.MailerRepository.SendSMTPMessage(msg)
 	if err != nil {
 		return err
 	}
