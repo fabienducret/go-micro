@@ -10,7 +10,7 @@ import (
 
 const port = "5001"
 
-type server struct {
+type Server struct {
 	LogRepository ports.LogRepository
 }
 
@@ -19,14 +19,14 @@ type Payload struct {
 	Data string
 }
 
-func NewServer(lr ports.LogRepository) *server {
-	s := new(server)
+func NewServer(lr ports.LogRepository) *Server {
+	s := new(Server)
 	s.LogRepository = lr
 
 	return s
 }
 
-func (s *server) Listen() {
+func (s *Server) Listen() {
 	err := rpc.Register(s)
 	if err != nil {
 		log.Fatal(err)
@@ -48,7 +48,7 @@ func (s *server) Listen() {
 	}
 }
 
-func (s *server) LogInfo(payload Payload, resp *string) error {
+func (s *Server) LogInfo(payload Payload, resp *string) error {
 	err := s.LogRepository.Insert(ports.LogEntry{
 		Name: payload.Name,
 		Data: payload.Data,

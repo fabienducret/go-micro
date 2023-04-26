@@ -10,7 +10,7 @@ import (
 
 const port = "5001"
 
-type server struct {
+type Server struct {
 	MailerRepository ports.MailRepository
 }
 
@@ -21,14 +21,14 @@ type Payload struct {
 	Message string
 }
 
-func NewServer(mr ports.MailRepository) *server {
-	s := new(server)
+func NewServer(mr ports.MailRepository) *Server {
+	s := new(Server)
 	s.MailerRepository = mr
 
 	return s
 }
 
-func (s *server) Listen() {
+func (s *Server) Listen() {
 	err := rpc.Register(s)
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +50,7 @@ func (s *server) Listen() {
 	}
 }
 
-func (s *server) SendMail(payload Payload, resp *string) error {
+func (s *Server) SendMail(payload Payload, resp *string) error {
 	msg := ports.Message{
 		From:    payload.From,
 		To:      payload.To,

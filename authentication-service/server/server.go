@@ -11,7 +11,7 @@ import (
 
 const port = "5001"
 
-type server struct {
+type Server struct {
 	UserRepository   ports.UserRepository
 	LoggerRepository ports.Logger
 }
@@ -27,15 +27,15 @@ type Identity struct {
 	LastName  string
 }
 
-func NewServer(ur ports.UserRepository, lr ports.Logger) *server {
-	s := new(server)
+func NewServer(ur ports.UserRepository, lr ports.Logger) *Server {
+	s := new(Server)
 	s.UserRepository = ur
 	s.LoggerRepository = lr
 
 	return s
 }
 
-func (s *server) Listen() {
+func (s *Server) Listen() {
 	err := rpc.Register(s)
 	if err != nil {
 		log.Fatal(err)
@@ -57,7 +57,7 @@ func (s *server) Listen() {
 	}
 }
 
-func (s *server) Authenticate(payload Payload, reply *Identity) error {
+func (s *Server) Authenticate(payload Payload, reply *Identity) error {
 	user, err := s.UserRepository.GetByEmail(payload.Email)
 	if err != nil {
 		return errors.New("invalid credentials")
