@@ -1,23 +1,24 @@
-package main
+package server_test
 
 import (
 	"authentication/repositories"
+	"authentication/server"
 	"testing"
 )
 
 func TestAuthenticate(t *testing.T) {
-	s := Server{
-		UserRepository:   repositories.NewUserTestRepository(),
-		LoggerRepository: repositories.NewLoggerTestRepository(),
-	}
+	s := server.NewServer(
+		repositories.NewUserTestRepository(),
+		repositories.NewLoggerTestRepository(),
+	)
 
 	t.Run("valid_credentials", func(t *testing.T) {
-		payload := Payload{
+		payload := server.Payload{
 			Email:    "test@gmail.com",
 			Password: "password",
 		}
 
-		var reply Identity
+		var reply server.Identity
 		err := s.Authenticate(payload, &reply)
 		if err != nil {
 			t.Errorf("Test failed with error %s", err)
@@ -28,12 +29,12 @@ func TestAuthenticate(t *testing.T) {
 		}
 	})
 	t.Run("invalid_credentials", func(t *testing.T) {
-		payload := Payload{
+		payload := server.Payload{
 			Email:    "test@gmail.com",
 			Password: "toto",
 		}
 
-		var reply Identity
+		var reply server.Identity
 		err := s.Authenticate(payload, &reply)
 		if err == nil {
 			t.Errorf("Error must be defined")

@@ -1,16 +1,15 @@
-package main
+package server_test
 
 import (
 	"mailer-service/repositories"
+	"mailer-service/server"
 	"testing"
 )
 
 func TestSendMail(t *testing.T) {
-	s := Server{
-		MailerRepository: repositories.NewMailhogTestRepository(),
-	}
+	s := server.NewServer(repositories.NewMailhogTestRepository())
 
-	payload := Payload{
+	payload := server.Payload{
 		From:    "from@example.com",
 		To:      "homer@example.com",
 		Subject: "Subject",

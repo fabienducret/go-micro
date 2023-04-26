@@ -1,16 +1,15 @@
-package main
+package server_test
 
 import (
 	"log-service/repositories"
+	"log-service/server"
 	"testing"
 )
 
 func TestLogInfo(t *testing.T) {
-	s := Server{
-		LogRepository: repositories.NewLogTestRepository(),
-	}
+	s := server.NewServer(repositories.NewLogTestRepository())
 
-	payload := Payload{
+	payload := server.Payload{
 		Name: "testevent",
 		Data: "data to log",
 	}

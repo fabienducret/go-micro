@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func (app *App) routes() http.Handler {
+func (s *server) routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{
@@ -22,9 +22,9 @@ func (app *App) routes() http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Post("/", app.Broker)
+	mux.Post("/", s.Broker)
 
-	mux.Post("/handle", app.HandleSubmission)
+	mux.Post("/handle", s.HandleSubmission)
 
 	return mux
 }

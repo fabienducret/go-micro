@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"broker/ports"
@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-func (app *App) Broker(w http.ResponseWriter, r *http.Request) {
+func (s *server) Broker(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, Payload{
 		Error:   false,
 		Message: "Hit the broker",
 	})
 }
 
-func (app *App) HandleSubmission(w http.ResponseWriter, r *http.Request) {
+func (s *server) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	var request ports.RequestPayload
 
 	err := readJSON(w, r, &request)
@@ -24,18 +24,18 @@ func (app *App) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 
 	switch request.Action {
 	case "auth":
-		app.handleAuthenticate(w, request.Auth)
+		s.handleAuthenticate(w, request.Auth)
 	case "log":
-		app.handleLog(w, request.Log)
+		s.handleLog(w, request.Log)
 	case "mail":
-		app.handleMail(w, request.Mail)
+		s.handleMail(w, request.Mail)
 	default:
 		errorJSON(w, errors.New("unknown action"))
 	}
 }
 
-func (app *App) handleAuthenticate(w http.ResponseWriter, payload ports.AuthPayload) {
-	reply, err := app.AuthenticationRepository.AuthenticateWith(ports.Credentials(payload))
+func (s *server) handleAuthenticate(w http.ResponseWriter, payload ports.AuthPayload) {
+	reply, err := s.AuthenticationRepository.AuthenticateWith(ports.Credentials(payload))
 	if err != nil {
 		errorJSON(w, err, http.StatusUnauthorized)
 		return
@@ -48,8 +48,8 @@ func (app *App) handleAuthenticate(w http.ResponseWriter, payload ports.AuthPayl
 	})
 }
 
-func (app *App) handleLog(w http.ResponseWriter, payload ports.LogPayload) {
-	reply, err := app.LoggerRepository.Log(ports.Log(payload))
+func (s *server) handleLog(w http.ResponseWriter, payload ports.LogPayload) {
+	reply, err := s.LoggerRepository.Log(ports.Log(payload))
 	if err != nil {
 		errorJSON(w, err)
 		return
@@ -61,8 +61,8 @@ func (app *App) handleLog(w http.ResponseWriter, payload ports.LogPayload) {
 	})
 }
 
-func (app *App) handleMail(w http.ResponseWriter, payload ports.MailPayload) {
-	reply, err := app.MailerRepository.Send(ports.Mail(payload))
+func (s *server) handleMail(w http.ResponseWriter, payload ports.MailPayload) {
+	reply, err := s.MailerRepository.Send(ports.Mail(payload))
 	if err != nil {
 		errorJSON(w, err)
 		return
