@@ -13,7 +13,7 @@ type Payload struct {
 	Message string
 }
 
-func (r *Server) SendMail(payload Payload, resp *string) error {
+func (s *Server) SendMail(payload Payload, resp *string) error {
 	msg := ports.Message{
 		From:    payload.From,
 		To:      payload.To,
@@ -21,7 +21,7 @@ func (r *Server) SendMail(payload Payload, resp *string) error {
 		Data:    payload.Message,
 	}
 
-	err := r.MailerRepository.SendSMTPMessage(msg)
+	err := s.MailerRepository.SendSMTPMessage(msg)
 	if err != nil {
 		return err
 	}

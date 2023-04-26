@@ -14,8 +14,8 @@ type Payload struct {
 	Data string
 }
 
-func (r *Server) LogInfo(payload Payload, resp *string) error {
-	err := r.LogRepository.Insert(ports.LogEntry{
+func (s *Server) LogInfo(payload Payload, resp *string) error {
+	err := s.LogRepository.Insert(ports.LogEntry{
 		Name: payload.Name,
 		Data: payload.Data,
 	})

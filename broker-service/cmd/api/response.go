@@ -7,13 +7,13 @@ import (
 	"net/http"
 )
 
-type jsonResponse struct {
+type Payload struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
-func (app *App) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
+func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // one megabyte
 
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
@@ -33,7 +33,7 @@ func (app *App) readJSON(w http.ResponseWriter, r *http.Request, data any) error
 	return nil
 }
 
-func (app *App) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
+func writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		return err
@@ -55,16 +55,16 @@ func (app *App) writeJSON(w http.ResponseWriter, status int, data any, headers .
 	return nil
 }
 
-func (app *App) errorJSON(w http.ResponseWriter, err error, status ...int) error {
+func errorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 
 	if len(status) > 0 {
 		statusCode = status[0]
 	}
 
-	var payload jsonResponse
+	var payload Payload
 	payload.Error = true
 	payload.Message = err.Error()
 
-	return app.writeJSON(w, statusCode, payload)
+	return writeJSON(w, statusCode, payload)
 }

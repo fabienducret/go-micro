@@ -7,71 +7,68 @@ import (
 )
 
 func (app *App) Broker(w http.ResponseWriter, r *http.Request) {
-	app.writeJSON(w, http.StatusOK, jsonResponse{
+	writeJSON(w, http.StatusOK, Payload{
 		Error:   false,
 		Message: "Hit the broker",
 	})
 }
 
 func (app *App) HandleSubmission(w http.ResponseWriter, r *http.Request) {
-	var requestPayload ports.RequestPayload
+	var request ports.RequestPayload
 
-	err := app.readJSON(w, r, &requestPayload)
+	err := readJSON(w, r, &request)
 	if err != nil {
-		app.errorJSON(w, err)
+		errorJSON(w, err)
 		return
 	}
 
-	switch requestPayload.Action {
+	switch request.Action {
 	case "auth":
-		app.handleAuthenticate(w, requestPayload)
+		app.handleAuthenticate(w, request.Auth)
 	case "log":
-		app.handleLog(w, requestPayload)
+		app.handleLog(w, request.Log)
 	case "mail":
-		app.handleMail(w, requestPayload)
+		app.handleMail(w, request.Mail)
 	default:
-		app.errorJSON(w, errors.New("unknown action"))
+		errorJSON(w, errors.New("unknown action"))
 	}
 }
 
-func (app *App) handleAuthenticate(w http.ResponseWriter, requestPayload ports.RequestPayload) {
-	asr := app.Container.AuthenticationServiceRepository
-	reply, err := asr.AuthenticateWith(ports.Credentials(requestPayload.Auth))
+func (app *App) handleAuthenticate(w http.ResponseWriter, payload ports.AuthPayload) {
+	reply, err := app.AuthenticationRepository.AuthenticateWith(ports.Credentials(payload))
 	if err != nil {
-		app.errorJSON(w, err, http.StatusUnauthorized)
+		errorJSON(w, err, http.StatusUnauthorized)
 		return
 	}
 
-	app.writeJSON(w, http.StatusAccepted, jsonResponse{
+	writeJSON(w, http.StatusAccepted, Payload{
 		Error:   false,
 		Message: "Authenticated !",
 		Data:    reply,
 	})
 }
 
-func (app *App) handleLog(w http.ResponseWriter, requestPayload ports.RequestPayload) {
-	lr := app.Container.LoggerRepository
-	reply, err := lr.Log(ports.Log(requestPayload.Log))
+func (app *App) handleLog(w http.ResponseWriter, payload ports.LogPayload) {
+	reply, err := app.LoggerRepository.Log(ports.Log(payload))
 	if err != nil {
-		app.errorJSON(w, err)
+		errorJSON(w, err)
 		return
 	}
 
-	app.writeJSON(w, http.StatusAccepted, jsonResponse{
+	writeJSON(w, http.StatusAccepted, Payload{
 		Error:   false,
 		Message: reply,
 	})
 }
 
-func (app *App) handleMail(w http.ResponseWriter, requestPayload ports.RequestPayload) {
-	mr := app.Container.MailerRepository
-	reply, err := mr.Send(ports.Mail(requestPayload.Mail))
+func (app *App) handleMail(w http.ResponseWriter, payload ports.MailPayload) {
+	reply, err := app.MailerRepository.Send(ports.Mail(payload))
 	if err != nil {
-		app.errorJSON(w, err)
+		errorJSON(w, err)
 		return
 	}
 
-	app.writeJSON(w, http.StatusAccepted, jsonResponse{
+	writeJSON(w, http.StatusAccepted, Payload{
 		Error:   false,
 		Message: reply,
 	})

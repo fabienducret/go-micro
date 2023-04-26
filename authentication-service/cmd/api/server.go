@@ -22,13 +22,13 @@ type Identity struct {
 	LastName  string
 }
 
-func (r *Server) Authenticate(payload Payload, reply *Identity) error {
-	user, err := r.UserRepository.GetByEmail(payload.Email)
+func (s *Server) Authenticate(payload Payload, reply *Identity) error {
+	user, err := s.UserRepository.GetByEmail(payload.Email)
 	if err != nil {
 		return errors.New("invalid credentials")
 	}
 
-	valid, err := r.UserRepository.PasswordMatches(*user, payload.Password)
+	valid, err := s.UserRepository.PasswordMatches(*user, payload.Password)
 	if err != nil || !valid {
 		return errors.New("invalid credentials")
 	}
@@ -37,7 +37,7 @@ func (r *Server) Authenticate(payload Payload, reply *Identity) error {
 		Name: "authentication",
 		Data: fmt.Sprintf("%s logged in", user.Email),
 	}
-	err = r.LoggerRepository.Log(toLog)
+	err = s.LoggerRepository.Log(toLog)
 	if err != nil {
 		return err
 	}

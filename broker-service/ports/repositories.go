@@ -23,7 +23,7 @@ type Identity struct {
 	LastName  string
 }
 
-type AuthenticationService interface {
+type Authentication interface {
 	AuthenticateWith(Credentials) (*Identity, error)
 }
 

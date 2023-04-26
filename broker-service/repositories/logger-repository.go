@@ -9,11 +9,6 @@ const loggerServiceAddress = "logger-service:5001"
 
 type loggerRepository struct{}
 
-type logPayload struct {
-	Name string
-	Data string
-}
-
 func NewLoggerRepository() *loggerRepository {
 	return &loggerRepository{}
 }
@@ -25,7 +20,7 @@ func (l *loggerRepository) Log(toLog ports.Log) (string, error) {
 	}
 
 	var replyFromCall string
-	err = client.Call("Server.LogInfo", logPayload(toLog), &replyFromCall)
+	err = client.Call("Server.LogInfo", toLog, &replyFromCall)
 	if err != nil {
 		return "", err
 	}

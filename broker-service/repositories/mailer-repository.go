@@ -7,13 +7,6 @@ import (
 
 const mailServiceAddress = "mail-service:5001"
 
-type mailPayload struct {
-	From    string
-	To      string
-	Subject string
-	Message string
-}
-
 type mailerRepository struct{}
 
 func NewMailerRepository() *mailerRepository {
@@ -27,7 +20,7 @@ func (r *mailerRepository) Send(mail ports.Mail) (string, error) {
 	}
 
 	var replyFromCall string
-	err = client.Call("Server.SendMail", mailPayload(mail), &replyFromCall)
+	err = client.Call("Server.SendMail", mail, &replyFromCall)
 	if err != nil {
 		return "", err
 	}
