@@ -1,14 +1,12 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
-func (s *server) routes() http.Handler {
+func (s *server) Routes() *chi.Mux {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{

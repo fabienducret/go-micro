@@ -28,7 +28,7 @@ func (s *server) Start() {
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: s.routes(),
+		Handler: s.Routes(),
 	}
 
 	err := server.ListenAndServe()
