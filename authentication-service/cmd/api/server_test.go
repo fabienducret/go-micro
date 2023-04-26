@@ -7,7 +7,7 @@ import (
 
 func TestAuthenticate(t *testing.T) {
 	s := Server{
-		UserRepository:   repositories.NewPostgresTestRepository(),
+		UserRepository:   repositories.NewUserTestRepository(),
 		LoggerRepository: repositories.NewLoggerTestRepository(),
 	}
 
