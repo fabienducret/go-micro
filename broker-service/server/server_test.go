@@ -22,6 +22,20 @@ func TestServer(t *testing.T) {
 		repositories.NewMailerTestRepository(),
 	)
 
+	t.Run("handle hit", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodPost, "/", nil)
+		response := httptest.NewRecorder()
+
+		mux := s.Routes()
+		mux.ServeHTTP(response, request)
+
+		var reply replyPayload
+		json.Unmarshal(response.Body.Bytes(), &reply)
+
+		assertStatusCode(t, response.Code, http.StatusOK)
+		assertMessage(t, reply.Message, "Hit the broker")
+	})
+
 	t.Run("handle authenticate with error", func(t *testing.T) {
 		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
 
@@ -33,6 +47,7 @@ func TestServer(t *testing.T) {
 
 		assertStatusCode(t, response.Code, http.StatusUnauthorized)
 	})
+
 	t.Run("handle authenticate with success", func(t *testing.T) {
 		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"verysecret\"}}"
 
