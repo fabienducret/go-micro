@@ -31,9 +31,7 @@ func TestServer(t *testing.T) {
 		mux := s.Routes()
 		mux.ServeHTTP(response, request)
 
-		if response.Code != http.StatusUnauthorized {
-			t.Error("Test failed for route authenticate")
-		}
+		assertStatusCode(t, response.Code, http.StatusUnauthorized)
 	})
 	t.Run("handle authenticate with success", func(t *testing.T) {
 		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"verysecret\"}}"
@@ -47,13 +45,8 @@ func TestServer(t *testing.T) {
 		var reply replyPayload
 		json.Unmarshal(response.Body.Bytes(), &reply)
 
-		if response.Code != http.StatusAccepted {
-			t.Error("Test failed for route authenticate, bad status code")
-		}
-
-		if reply.Message != "Authenticated !" {
-			t.Errorf("Test failed for route authenticate, reply %s", reply.Message)
-		}
+		assertStatusCode(t, response.Code, http.StatusAccepted)
+		assertMessage(t, reply.Message, "Authenticated !")
 	})
 
 	t.Run("handle logger", func(t *testing.T) {
@@ -68,13 +61,8 @@ func TestServer(t *testing.T) {
 		var reply replyPayload
 		json.Unmarshal(response.Body.Bytes(), &reply)
 
-		if response.Code != http.StatusAccepted {
-			t.Error("Test failed for route logger, bad status code")
-		}
-
-		if reply.Message != "Log handled for:event" {
-			t.Errorf("Test failed for route logger, reply %s", reply.Message)
-		}
+		assertStatusCode(t, response.Code, http.StatusAccepted)
+		assertMessage(t, reply.Message, "Log handled for:event")
 	})
 
 	t.Run("handle mail", func(t *testing.T) {
@@ -89,12 +77,19 @@ func TestServer(t *testing.T) {
 		var reply replyPayload
 		json.Unmarshal(response.Body.Bytes(), &reply)
 
-		if response.Code != http.StatusAccepted {
-			t.Error("Test failed for route mail, bad status code")
-		}
-
-		if reply.Message != "Message sent to simpson@gmail.com" {
-			t.Errorf("Test failed for route mail, reply %s", reply.Message)
-		}
+		assertStatusCode(t, response.Code, http.StatusAccepted)
+		assertMessage(t, reply.Message, "Message sent to simpson@gmail.com")
 	})
+}
+
+func assertStatusCode(t *testing.T, got, want int) {
+	if got != want {
+		t.Errorf("Test failed for route with status code %v", got)
+	}
+}
+
+func assertMessage(t *testing.T, got, want string) {
+	if got != want {
+		t.Errorf("Test failed for route with message %s", got)
+	}
 }
