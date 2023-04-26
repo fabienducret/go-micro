@@ -23,11 +23,11 @@ type Mailer struct {
 	FromName    string
 }
 
-type MailhogRepository struct {
+type mailhogRepository struct {
 	mailer Mailer
 }
 
-func NewMailhogRepository() *MailhogRepository {
+func NewMailhogRepository() *mailhogRepository {
 	port, _ := strconv.Atoi(os.Getenv("MAIL_PORT"))
 	m := Mailer{
 		Domain:      os.Getenv("MAIL_DOMAIN"),
@@ -40,12 +40,12 @@ func NewMailhogRepository() *MailhogRepository {
 		FromAddress: os.Getenv("FROM_ADDRESS"),
 	}
 
-	return &MailhogRepository{
+	return &mailhogRepository{
 		mailer: m,
 	}
 }
 
-func (r *MailhogRepository) SendSMTPMessage(msg ports.Message) error {
+func (r *mailhogRepository) SendSMTPMessage(msg ports.Message) error {
 	if msg.From == "" {
 		msg.From = r.mailer.FromAddress
 	}
