@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type LogEntry struct {
+type logEntry struct {
 	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      string    `bson:"name" json:"name"`
 	Data      string    `bson:"data" json:"data"`
@@ -17,20 +17,20 @@ type LogEntry struct {
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
-type MongoRepository struct {
+type mongoRepository struct {
 	Client *mongo.Client
 }
 
-func NewMongoRepository(db *mongo.Client) *MongoRepository {
-	return &MongoRepository{
+func NewMongoRepository(db *mongo.Client) *mongoRepository {
+	return &mongoRepository{
 		Client: db,
 	}
 }
 
-func (r *MongoRepository) Insert(entry ports.LogEntry) error {
+func (r *mongoRepository) Insert(entry ports.LogEntry) error {
 	collection := r.Client.Database("logs").Collection("logs")
 
-	_, err := collection.InsertOne(context.TODO(), LogEntry{
+	_, err := collection.InsertOne(context.TODO(), logEntry{
 		Name:      entry.Name,
 		Data:      entry.Data,
 		CreatedAt: time.Now(),
