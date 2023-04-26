@@ -8,5 +8,7 @@ import (
 
 func main() {
 	log.Println("Starting mail service")
-	server.NewServer(repositories.NewMailhogRepository()).Listen()
+	s := server.NewServer(repositories.NewMailhogRepository())
+
+	s.Listen()
 }

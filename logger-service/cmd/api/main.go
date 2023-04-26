@@ -25,5 +25,7 @@ func main() {
 		}
 	}()
 
-	server.NewServer(repositories.NewMongoRepository(client)).Listen()
+	s := server.NewServer(repositories.NewMongoRepository(client))
+
+	s.Listen()
 }

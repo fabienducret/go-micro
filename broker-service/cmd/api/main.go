@@ -6,9 +6,11 @@ import (
 )
 
 func main() {
-	server.NewServer(
+	s := server.NewServer(
 		repositories.NewAuthenticationRepository(),
 		repositories.NewLoggerRepository(),
 		repositories.NewMailerRepository(),
-	).Start()
+	)
+
+	s.Start()
 }

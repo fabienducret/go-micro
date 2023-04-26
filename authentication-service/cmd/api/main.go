@@ -18,9 +18,10 @@ func main() {
 		log.Panic("Can't connect to Postgres")
 	}
 
-	server.NewServer(
+	s := server.NewServer(
 		repositories.NewPostgresRepository(conn),
 		repositories.NewLoggerRepository(),
-	).Listen()
+	)
 
+	s.Listen()
 }
