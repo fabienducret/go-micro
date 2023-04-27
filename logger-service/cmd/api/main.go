@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log-service/data"
 	"log-service/repositories"
 	"log-service/server"
 	"time"
@@ -11,7 +12,7 @@ import (
 func main() {
 	log.Println("Starting logger service")
 
-	client, err := connectToMongo()
+	client, err := data.ConnectToMongo()
 	if err != nil {
 		log.Panic(err)
 	}

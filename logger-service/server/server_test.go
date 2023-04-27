@@ -16,6 +16,7 @@ func TestLogInfo(t *testing.T) {
 
 	var reply string
 	err := s.LogInfo(payload, &reply)
+
 	if err != nil {
 		t.Errorf("Test failed with error %s", err)
 	}

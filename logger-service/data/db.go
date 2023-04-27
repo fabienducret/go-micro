@@ -1,4 +1,4 @@
-package main
+package data
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 const mongoUrl = "mongodb://mongo:27017"
 
-func connectToMongo() (*mongo.Client, error) {
+func ConnectToMongo() (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(mongoUrl)
 	clientOptions.SetAuth(options.Credential{
 		Username: "admin",

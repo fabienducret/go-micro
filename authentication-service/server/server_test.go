@@ -25,9 +25,10 @@ func TestAuthenticate(t *testing.T) {
 		}
 
 		if reply.Email != "test@gmail.com" {
-			t.Errorf("Test failed with error %s", err)
+			t.Errorf("Test failed, bad email received %s", reply.Email)
 		}
 	})
+
 	t.Run("invalid_credentials", func(t *testing.T) {
 		payload := server.Payload{
 			Email:    "test@gmail.com",
@@ -36,6 +37,7 @@ func TestAuthenticate(t *testing.T) {
 
 		var reply server.Identity
 		err := s.Authenticate(payload, &reply)
+
 		if err == nil {
 			t.Errorf("Error must be defined")
 		}
