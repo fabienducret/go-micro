@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"log-service/adapters"
 	"log-service/data"
-	"log-service/repositories"
 	"log-service/server"
 	"time"
 )
@@ -26,7 +26,7 @@ func main() {
 		}
 	}()
 
-	s := server.NewServer(repositories.NewMongoRepository(client))
+	s := server.NewServer(adapters.NewMongoRepository(client))
 
 	s.Listen()
 }

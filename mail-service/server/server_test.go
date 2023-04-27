@@ -1,13 +1,13 @@
 package server_test
 
 import (
-	"mailer-service/repositories"
+	"mailer-service/adapters"
 	"mailer-service/server"
 	"testing"
 )
 
 func TestSendMail(t *testing.T) {
-	s := server.NewServer(repositories.NewMailhogTestRepository())
+	s := server.NewServer(adapters.NewMailhogTestRepository())
 
 	payload := server.Payload{
 		From:    "from@example.com",

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"authentication/adapters"
 	"authentication/data"
-	"authentication/repositories"
 	"authentication/server"
 	"log"
 
@@ -20,8 +20,8 @@ func main() {
 	}
 
 	s := server.NewServer(
-		repositories.NewPostgresRepository(conn),
-		repositories.NewLoggerRepository(),
+		adapters.NewPostgresRepository(conn),
+		adapters.NewLoggerRepository(),
 	)
 
 	s.Listen()

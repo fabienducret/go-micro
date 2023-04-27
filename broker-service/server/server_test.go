@@ -1,7 +1,7 @@
 package server_test
 
 import (
-	"broker/repositories"
+	"broker/adapters"
 	"broker/server"
 	"encoding/json"
 	"net/http"
@@ -17,9 +17,9 @@ type replyPayload struct {
 
 func TestServer(t *testing.T) {
 	s := server.NewServer(
-		repositories.NewAuthenticationTestRepository(),
-		repositories.NewLoggerTestRepository(),
-		repositories.NewMailerTestRepository(),
+		adapters.NewAuthenticationTestRepository(),
+		adapters.NewLoggerTestRepository(),
+		adapters.NewMailerTestRepository(),
 	)
 
 	t.Run("handle hit", func(t *testing.T) {

@@ -1,4 +1,4 @@
-package repositories
+package adapters
 
 import (
 	"log-service/ports"

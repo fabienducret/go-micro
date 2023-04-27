@@ -1,15 +1,15 @@
 package server_test
 
 import (
-	"authentication/repositories"
+	"authentication/adapters"
 	"authentication/server"
 	"testing"
 )
 
 func TestAuthenticate(t *testing.T) {
 	s := server.NewServer(
-		repositories.NewUserTestRepository(),
-		repositories.NewLoggerTestRepository(),
+		adapters.NewUserTestRepository(),
+		adapters.NewLoggerTestRepository(),
 	)
 
 	t.Run("valid_credentials", func(t *testing.T) {

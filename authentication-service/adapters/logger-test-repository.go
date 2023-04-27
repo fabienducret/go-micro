@@ -1,4 +1,4 @@
-package repositories
+package adapters
 
 import "authentication/ports"
 

@@ -1,15 +1,15 @@
 package main
 
 import (
-	"broker/repositories"
+	"broker/adapters"
 	"broker/server"
 )
 
 func main() {
 	s := server.NewServer(
-		repositories.NewAuthenticationRepository(),
-		repositories.NewLoggerRepository(),
-		repositories.NewMailerRepository(),
+		adapters.NewAuthenticationRepository(),
+		adapters.NewLoggerRepository(),
+		adapters.NewMailerRepository(),
 	)
 
 	s.Start()
