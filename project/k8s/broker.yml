@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: broker-service
-          image: 'fabienducret/broker-service:1.0.1'
+          image: 'fabienducret/broker-service:1.0.0'
           resources:
             requests:
               memory: '64Mi'
