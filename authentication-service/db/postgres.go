@@ -1,4 +1,4 @@
-package data
+package db
 
 import (
 	"database/sql"
@@ -7,28 +7,26 @@ import (
 	"time"
 )
 
-func ConnectToDB() *sql.DB {
+func Connect() *sql.DB {
 	dsn := os.Getenv("DSN")
-	var counts int64
+	retries := 0
+	maxRetries := 5
 
 	for {
-		connection, err := openDB(dsn)
-		if err != nil {
-			log.Println("Postgres not yet ready...")
-			counts++
-		} else {
+		db, err := openDB(dsn)
+		if db != nil {
 			log.Println("Connected to Postgres")
-			return connection
+			return db
 		}
 
-		if counts > 10 {
+		if retries > maxRetries {
 			log.Println(err)
 			return nil
 		}
 
-		log.Println("Backing off for 2 seconds...")
-		time.Sleep(2 * time.Second)
-		continue
+		log.Println("Postgres not yet ready, sleep 2 seconds...")
+		sleepTwoSeconds()
+		retries++
 	}
 }
 
@@ -44,4 +42,8 @@ func openDB(dsn string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func sleepTwoSeconds() {
+	time.Sleep(2 * time.Second)
 }

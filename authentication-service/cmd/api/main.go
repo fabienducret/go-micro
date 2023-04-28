@@ -2,7 +2,7 @@ package main
 
 import (
 	"authentication/adapters"
-	"authentication/data"
+	"authentication/db"
 	"authentication/server"
 	"log"
 
@@ -14,7 +14,7 @@ import (
 func main() {
 	log.Println("Starting authentication service")
 
-	conn := data.ConnectToDB()
+	conn := db.Connect()
 	if conn == nil {
 		log.Panic("Can't connect to Postgres")
 	}

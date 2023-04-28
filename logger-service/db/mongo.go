@@ -1,4 +1,4 @@
-package data
+package db
 
 import (
 	"context"
@@ -9,27 +9,27 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const mongoUrl = "mongodb://mongo:27017"
+const url = "mongodb://mongo:27017"
 
-func ConnectToMongo() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(mongoUrl)
-	clientOptions.SetAuth(options.Credential{
+func Connect() (*mongo.Client, error) {
+	opts := options.Client().ApplyURI(url)
+	opts.SetAuth(options.Credential{
 		Username: "admin",
 		Password: "password",
 	})
 
-	c, err := mongo.Connect(context.TODO(), clientOptions)
+	c, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		log.Println("Error connecting: ", err)
 		return nil, err
 	}
 
-	log.Println("Starting mongodb on url", mongoUrl)
+	log.Println("Starting mongodb on url", url)
 
 	return c, nil
 }
 
-func DisconnectClient(client *mongo.Client) {
+func Disconnect(client *mongo.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
