@@ -79,9 +79,9 @@ Response with valid credentials
   "error": false,
   "message": "Authenticated !",
   "data": {
-    "Email": "admin@example.com",
-    "FirstName": "Admin",
-    "LastName": "User"
+    "email": "admin@example.com",
+    "firstname": "Admin",
+    "lastname": "User"
   }
 }
 ```

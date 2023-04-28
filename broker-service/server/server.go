@@ -10,12 +10,16 @@ import (
 const webPort = "8080"
 
 type server struct {
-	AuthenticationRepository ports.Authentication
-	LoggerRepository         ports.Logger
-	MailerRepository         ports.Mailer
+	AuthenticationRepository ports.AuthenticationRepository
+	LoggerRepository         ports.LoggerRepository
+	MailerRepository         ports.MailerRepository
 }
 
-func NewServer(ar ports.Authentication, lr ports.Logger, mr ports.Mailer) *server {
+func NewServer(
+	ar ports.AuthenticationRepository,
+	lr ports.LoggerRepository,
+	mr ports.MailerRepository,
+) *server {
 	return &server{
 		AuthenticationRepository: ar,
 		LoggerRepository:         lr,

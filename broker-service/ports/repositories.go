@@ -18,19 +18,19 @@ type Mail struct {
 }
 
 type Identity struct {
-	Email     string
-	FirstName string
-	LastName  string
+	Email     string `json:"email"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
 }
 
-type Authentication interface {
+type AuthenticationRepository interface {
 	AuthenticateWith(Credentials) (*Identity, error)
 }
 
-type Logger interface {
+type LoggerRepository interface {
 	Log(Log) (string, error)
 }
 
-type Mailer interface {
+type MailerRepository interface {
 	Send(Mail) (string, error)
 }

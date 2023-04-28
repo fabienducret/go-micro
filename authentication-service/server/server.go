@@ -13,7 +13,7 @@ const port = "5001"
 
 type Server struct {
 	UserRepository   ports.UserRepository
-	LoggerRepository ports.Logger
+	LoggerRepository ports.LoggerRepository
 }
 
 type Payload struct {
@@ -27,7 +27,7 @@ type Identity struct {
 	LastName  string
 }
 
-func NewServer(ur ports.UserRepository, lr ports.Logger) *Server {
+func NewServer(ur ports.UserRepository, lr ports.LoggerRepository) *Server {
 	s := new(Server)
 	s.UserRepository = ur
 	s.LoggerRepository = lr
