@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,4 +27,13 @@ func ConnectToMongo() (*mongo.Client, error) {
 	log.Println("Starting mongodb on url", mongoUrl)
 
 	return c, nil
+}
+
+func DisconnectClient(client *mongo.Client) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	if err := client.Disconnect(ctx); err != nil {
+		panic(err)
+	}
 }

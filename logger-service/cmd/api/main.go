@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
 	"log"
 	"log-service/adapters"
 	"log-service/data"
 	"log-service/server"
-	"time"
 )
 
 func main() {
@@ -16,15 +14,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-
-	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
+	defer data.DisconnectClient(client)
 
 	s := server.NewServer(adapters.NewMongoRepository(client))
 

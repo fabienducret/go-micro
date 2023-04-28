@@ -40,11 +40,11 @@ func (s *Server) Listen() {
 	defer listener.Close()
 
 	for {
-		rpcConn, err := listener.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			continue
 		}
-		go rpc.ServeConn(rpcConn)
+		go rpc.ServeConn(conn)
 	}
 }
 
