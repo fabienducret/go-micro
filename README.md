@@ -1,6 +1,6 @@
 # Go Micro
 
-This project is an entry point to the world of Microservices.
+This project is an entry point to the world of Microservices with Go.
 
 It's a result of an udemy's training and my point of view.
 
@@ -19,15 +19,17 @@ This endpoint is a HTTP API that can receive 3 kinds of actions :
 
 When the **broker-service** receives a payload, it communicates with 3 other services depending on the payload :
 
-- authentication-service
-- logger-service
-- mail-service
+- **authentication-service**
+- **logger-service**
+- **mail-service**
 
 The communication between the broker and the 3 other services is through **RCP over TCP**.
 
 ---
 
 ## How to use
+
+### Build the containers
 
 ```bash
 cd project
@@ -38,7 +40,31 @@ You must have your containers running:
 
 ![Alt text](docs/docker_containers.png 'Docker containers')
 
-Then you can send payloads to the broker-service.
+### Broker calls
+
+#### Hit request
+
+Request
+
+```bash
+curl -X POST http://localhost:8080 \
+-H "Content-Type: application/json" \
+```
+
+Response
+
+```json
+{
+  "error": false,
+  "message": "Hit the broker"
+}
+```
+
+---
+
+#### Authentication request
+
+Request
 
 ```bash
 curl -X POST http://localhost:8080/handle \
@@ -46,9 +72,34 @@ curl -X POST http://localhost:8080/handle \
 -d '{"action":"auth","auth":{"email":"admin@example.com","password":"verysecret"}}'
 ```
 
-![Alt text](docs/auth_request.png 'Authentication request')
+Response with valid credentials
+
+```json
+{
+  "error": false,
+  "message": "Authenticated !",
+  "data": {
+    "Email": "admin@example.com",
+    "FirstName": "Admin",
+    "LastName": "User"
+  }
+}
+```
+
+Response with invalid credentials
+
+```json
+{
+  "error": true,
+  "message": "invalid credentials"
+}
+```
 
 ---
+
+#### Log request
+
+Request
 
 ```bash
 curl -X POST http://localhost:8080/handle \
@@ -56,9 +107,20 @@ curl -X POST http://localhost:8080/handle \
 -d '{"action":"log","log":{"name":"event","data":"Hello world !"}}'
 ```
 
-![Alt text](docs/log_request.png 'Log request')
+Response
+
+```json
+{
+  "error": false,
+  "message": "Log handled for:event"
+}
+```
 
 ---
+
+#### Mail request
+
+Request
 
 ```bash
 curl -X POST http://localhost:8080/handle \
@@ -66,4 +128,11 @@ curl -X POST http://localhost:8080/handle \
 -d '{"action":"mail","mail":{"from": "me@example.com", "to": "you@example.com", "subject": "Test email", "message": "Hello world"}}'
 ```
 
-![Alt text](docs/mail_request.png 'Mail request')
+Response
+
+```json
+{
+  "error": false,
+  "message": "Message sent to you@example.com"
+}
+```
