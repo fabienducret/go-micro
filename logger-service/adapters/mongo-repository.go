@@ -30,7 +30,7 @@ func NewMongoRepository(db *mongo.Client) *mongoRepository {
 func (r *mongoRepository) Insert(entry ports.LogEntry) error {
 	collection := r.Client.Database("logs").Collection("logs")
 
-	_, err := collection.InsertOne(context.TODO(), logEntry{
+	_, err := collection.InsertOne(context.Background(), logEntry{
 		Name:      entry.Name,
 		Data:      entry.Data,
 		CreatedAt: time.Now(),

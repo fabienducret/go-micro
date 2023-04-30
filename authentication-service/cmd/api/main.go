@@ -5,6 +5,7 @@ import (
 	"authentication/db"
 	"authentication/server"
 	"log"
+	"os"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
@@ -14,7 +15,7 @@ import (
 func main() {
 	log.Println("Starting authentication service")
 
-	conn := db.Connect()
+	conn := db.Connect(os.Getenv("DSN"))
 	if conn == nil {
 		log.Panic("Can't connect to Postgres")
 	}

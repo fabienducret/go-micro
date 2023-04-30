@@ -10,6 +10,10 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    environment:
+      AUTHENTICATION_SERVICE_ADDRESS: authentication-service:5001
+      LOGGER_SERVICE_ADDRESS: logger-service:5001
+      MAIL_SERVICE_ADDRESS: mail-service:5001
 
   logger-service:
     build:
@@ -18,6 +22,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    environment:
+      MONGO_URL: 'mongodb://mongo:27017'
 
   authentication-service:
     build:

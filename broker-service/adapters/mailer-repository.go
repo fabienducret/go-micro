@@ -5,16 +5,18 @@ import (
 	"net/rpc"
 )
 
-const mailServiceAddress = "mail-service:5001"
+type mailerRepository struct {
+	addr string
+}
 
-type mailerRepository struct{}
-
-func NewMailerRepository() *mailerRepository {
-	return &mailerRepository{}
+func NewMailerRepository(addr string) *mailerRepository {
+	return &mailerRepository{
+		addr: addr,
+	}
 }
 
 func (r *mailerRepository) Send(mail ports.Mail) (string, error) {
-	client, err := rpc.Dial("tcp", mailServiceAddress)
+	client, err := rpc.Dial("tcp", r.addr)
 	if err != nil {
 		return "", err
 	}

@@ -5,12 +5,13 @@ import (
 	"log-service/adapters"
 	"log-service/db"
 	"log-service/server"
+	"os"
 )
 
 func main() {
 	log.Println("Starting logger service")
 
-	client, err := db.Connect()
+	client, err := db.Connect(os.Getenv("MONGO_URL"))
 	if err != nil {
 		log.Panic(err)
 	}

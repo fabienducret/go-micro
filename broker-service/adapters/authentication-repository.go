@@ -5,16 +5,18 @@ import (
 	"net/rpc"
 )
 
-const authenticationAddress = "authentication-service:5001"
+type authenticationRepository struct {
+	addr string
+}
 
-type authenticationRepository struct{}
-
-func NewAuthenticationRepository() *authenticationRepository {
-	return &authenticationRepository{}
+func NewAuthenticationRepository(addr string) *authenticationRepository {
+	return &authenticationRepository{
+		addr: addr,
+	}
 }
 
 func (a authenticationRepository) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
-	client, err := rpc.Dial("tcp", authenticationAddress)
+	client, err := rpc.Dial("tcp", a.addr)
 	if err != nil {
 		return nil, err
 	}

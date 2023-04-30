@@ -3,12 +3,10 @@ package db
 import (
 	"database/sql"
 	"log"
-	"os"
 	"time"
 )
 
-func Connect() *sql.DB {
-	dsn := os.Getenv("DSN")
+func Connect(dsn string) *sql.DB {
 	maxRetries := 5
 
 	for i := 0; i < maxRetries; i++ {

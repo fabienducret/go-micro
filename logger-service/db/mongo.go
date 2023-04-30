@@ -9,16 +9,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const url = "mongodb://mongo:27017"
-
-func Connect() (*mongo.Client, error) {
+func Connect(url string) (*mongo.Client, error) {
 	opts := options.Client().ApplyURI(url)
 	opts.SetAuth(options.Credential{
 		Username: "admin",
 		Password: "password",
 	})
 
-	c, err := mongo.Connect(context.TODO(), opts)
+	c, err := mongo.Connect(context.Background(), opts)
 	if err != nil {
 		log.Println("Error connecting: ", err)
 		return nil, err
