@@ -12,8 +12,8 @@ import (
 const port = "5001"
 
 type Server struct {
-	UserRepository   ports.UserRepository
-	LoggerRepository ports.LoggerRepository
+	UserRepository ports.UserRepository
+	Logger         ports.Logger
 }
 
 type Payload struct {
@@ -27,10 +27,10 @@ type Identity struct {
 	LastName  string
 }
 
-func NewServer(ur ports.UserRepository, lr ports.LoggerRepository) *Server {
+func NewServer(ur ports.UserRepository, l ports.Logger) *Server {
 	s := new(Server)
 	s.UserRepository = ur
-	s.LoggerRepository = lr
+	s.Logger = l
 
 	return s
 }
@@ -72,7 +72,7 @@ func (s *Server) Authenticate(payload Payload, reply *Identity) error {
 		Name: "authentication",
 		Data: fmt.Sprintf("%s logged in", user.Email),
 	}
-	err = s.LoggerRepository.Log(toLog)
+	err = s.Logger.Log(toLog)
 	if err != nil {
 		return err
 	}

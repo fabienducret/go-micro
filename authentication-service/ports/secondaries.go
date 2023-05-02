@@ -12,7 +12,7 @@ type User struct {
 	Password  string
 }
 
-type LoggerRepository interface {
+type Logger interface {
 	Log(Log) error
 }
 

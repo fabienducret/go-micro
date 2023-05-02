@@ -23,14 +23,14 @@ type Identity struct {
 	LastName  string `json:"lastname"`
 }
 
-type AuthenticationRepository interface {
+type Authentication interface {
 	AuthenticateWith(Credentials) (*Identity, error)
 }
 
-type LoggerRepository interface {
+type Logger interface {
 	Log(Log) (string, error)
 }
 
-type MailerRepository interface {
+type Mailer interface {
 	Send(Mail) (string, error)
 }

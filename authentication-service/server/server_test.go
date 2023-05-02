@@ -9,7 +9,7 @@ import (
 func TestAuthenticate(t *testing.T) {
 	s := server.NewServer(
 		adapters.NewUserTestRepository(),
-		adapters.NewLoggerTestRepository(),
+		adapters.NewTestLogger(),
 	)
 
 	t.Run("valid_credentials", func(t *testing.T) {

@@ -12,13 +12,13 @@ type payload struct {
 	Data string
 }
 
-type loggerRepository struct{}
+type logger struct{}
 
-func NewLoggerRepository() *loggerRepository {
-	return &loggerRepository{}
+func NewLogger() *logger {
+	return &logger{}
 }
 
-func (r *loggerRepository) Log(toLog ports.Log) error {
+func (r *logger) Log(toLog ports.Log) error {
 	client, err := rpc.Dial("tcp", loggerServiceAddress)
 	if err != nil {
 		return err

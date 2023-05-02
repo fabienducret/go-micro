@@ -8,9 +8,9 @@ import (
 
 func main() {
 	s := server.NewServer(
-		adapters.NewAuthenticationRepository(os.Getenv("AUTHENTICATION_SERVICE_ADDRESS")),
-		adapters.NewLoggerRepository(os.Getenv("LOGGER_SERVICE_ADDRESS")),
-		adapters.NewMailerRepository(os.Getenv("MAIL_SERVICE_ADDRESS")),
+		adapters.NewAuthentication(os.Getenv("AUTHENTICATION_SERVICE_ADDRESS")),
+		adapters.NewLogger(os.Getenv("LOGGER_SERVICE_ADDRESS")),
+		adapters.NewMailer(os.Getenv("MAIL_SERVICE_ADDRESS")),
 	)
 
 	s.Start()

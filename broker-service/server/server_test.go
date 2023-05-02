@@ -17,9 +17,9 @@ type replyPayload struct {
 
 func TestServer(t *testing.T) {
 	s := server.NewServer(
-		adapters.NewAuthenticationTestRepository(),
-		adapters.NewLoggerTestRepository(),
-		adapters.NewMailerTestRepository(),
+		adapters.NewTestAuthentication(),
+		adapters.NewTestLogger(),
+		adapters.NewTestMailer(),
 	)
 
 	t.Run("handle hit", func(t *testing.T) {

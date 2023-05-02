@@ -22,7 +22,7 @@ func main() {
 
 	s := server.NewServer(
 		adapters.NewPostgresRepository(conn),
-		adapters.NewLoggerRepository(),
+		adapters.NewLogger(),
 	)
 
 	s.Listen()

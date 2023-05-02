@@ -5,13 +5,13 @@ import (
 	"errors"
 )
 
-type authenticationTestRepository struct{}
+type testAuthentication struct{}
 
-func NewAuthenticationTestRepository() *authenticationTestRepository {
-	return &authenticationTestRepository{}
+func NewTestAuthentication() *testAuthentication {
+	return &testAuthentication{}
 }
 
-func (a authenticationTestRepository) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
+func (a testAuthentication) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
 	if credentials.Password != "verysecret" {
 		return nil, errors.New("invalid password")
 	}
