@@ -18,3 +18,9 @@ down:
 	docker-compose down
 	@echo "Done!"
 
+test: up_build
+	@echo "Wait 5 seconds"
+	sleep 5
+	go test -v ./...
+	@echo "Done"
+	make down
