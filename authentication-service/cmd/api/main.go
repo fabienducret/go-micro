@@ -22,7 +22,7 @@ func main() {
 
 	s := server.NewServer(
 		adapters.NewPostgresRepository(conn),
-		adapters.NewLogger(),
+		adapters.NewLogger(os.Getenv("LOGGER_SERVICE_ADDRESS")),
 	)
 
 	s.Listen()

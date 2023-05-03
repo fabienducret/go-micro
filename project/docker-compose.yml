@@ -34,6 +34,7 @@ services:
       replicas: 1
     environment:
       DSN: 'host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5'
+      LOGGER_SERVICE_ADDRESS: logger-service:5001
 
   mail-service:
     build:
