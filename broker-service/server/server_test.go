@@ -1,13 +1,15 @@
 package server_test
 
 import (
-	"broker/adapters"
+	"broker/adapters/tests"
 	"broker/server"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type replyPayload struct {
@@ -17,84 +19,91 @@ type replyPayload struct {
 
 func TestServer(t *testing.T) {
 	s := server.NewServer(
-		adapters.NewTestAuthentication(),
-		adapters.NewTestLogger(),
-		adapters.NewTestMailer(),
+		tests.NewAuthenticationStub(),
+		tests.NewLoggerStub(),
+		tests.NewMailerStub(),
 	)
 
 	t.Run("handle hit", func(t *testing.T) {
+		// Given
 		request, _ := http.NewRequest(http.MethodPost, "/", nil)
-		response := httptest.NewRecorder()
 
-		mux := s.Routes()
-		mux.ServeHTTP(response, request)
+		// When
+		httpResponse := reponseFrom(s.Routes(), request)
+		reply := replyFrom(httpResponse)
 
-		var reply replyPayload
-		json.Unmarshal(response.Body.Bytes(), &reply)
-
-		assertStatusCode(t, response.Code, http.StatusOK)
+		// Then
+		assertStatusCode(t, httpResponse.Code, http.StatusOK)
 		assertMessage(t, reply.Message, "Hit the broker")
 	})
 
 	t.Run("handle authenticate with error", func(t *testing.T) {
+		// Given
 		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
-
 		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
-		response := httptest.NewRecorder()
 
-		mux := s.Routes()
-		mux.ServeHTTP(response, request)
+		// When
+		httpResponse := reponseFrom(s.Routes(), request)
 
-		assertStatusCode(t, response.Code, http.StatusUnauthorized)
+		// Then
+		assertStatusCode(t, httpResponse.Code, http.StatusUnauthorized)
 	})
 
 	t.Run("handle authenticate with success", func(t *testing.T) {
+		// Given
 		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"verysecret\"}}"
-
 		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
-		response := httptest.NewRecorder()
 
-		mux := s.Routes()
-		mux.ServeHTTP(response, request)
+		// When
+		httpResponse := reponseFrom(s.Routes(), request)
+		reply := replyFrom(httpResponse)
 
-		var reply replyPayload
-		json.Unmarshal(response.Body.Bytes(), &reply)
-
-		assertStatusCode(t, response.Code, http.StatusAccepted)
+		// Then
+		assertStatusCode(t, httpResponse.Code, http.StatusAccepted)
 		assertMessage(t, reply.Message, "Authenticated !")
 	})
 
-	t.Run("handle logger", func(t *testing.T) {
+	t.Run("handle logger with success", func(t *testing.T) {
+		// Given
 		payload := "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
-
 		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
-		response := httptest.NewRecorder()
 
-		mux := s.Routes()
-		mux.ServeHTTP(response, request)
+		// When
+		httpResponse := reponseFrom(s.Routes(), request)
+		reply := replyFrom(httpResponse)
 
-		var reply replyPayload
-		json.Unmarshal(response.Body.Bytes(), &reply)
-
-		assertStatusCode(t, response.Code, http.StatusAccepted)
+		// Then
+		assertStatusCode(t, httpResponse.Code, http.StatusAccepted)
 		assertMessage(t, reply.Message, "Log handled for:event")
 	})
 
 	t.Run("handle mail", func(t *testing.T) {
+		// Given
 		payload := "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
-
 		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
-		response := httptest.NewRecorder()
 
-		mux := s.Routes()
-		mux.ServeHTTP(response, request)
+		// When
+		httpResponse := reponseFrom(s.Routes(), request)
+		reply := replyFrom(httpResponse)
 
-		var reply replyPayload
-		json.Unmarshal(response.Body.Bytes(), &reply)
-
-		assertStatusCode(t, response.Code, http.StatusAccepted)
+		// Then
+		assertStatusCode(t, httpResponse.Code, http.StatusAccepted)
 		assertMessage(t, reply.Message, "Message sent to simpson@gmail.com")
 	})
+}
+
+func reponseFrom(mux *chi.Mux, request *http.Request) *httptest.ResponseRecorder {
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, request)
+
+	return response
+}
+
+func replyFrom(response *httptest.ResponseRecorder) replyPayload {
+	var reply replyPayload
+	json.Unmarshal(response.Body.Bytes(), &reply)
+
+	return reply
 }
 
 func assertStatusCode(t *testing.T, got, want int) {

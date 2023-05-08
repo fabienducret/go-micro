@@ -1,17 +1,17 @@
-package adapters
+package tests
 
 import (
 	"broker/ports"
 	"errors"
 )
 
-type testAuthentication struct{}
+type authenticationStub struct{}
 
-func NewTestAuthentication() *testAuthentication {
-	return &testAuthentication{}
+func NewAuthenticationStub() *authenticationStub {
+	return &authenticationStub{}
 }
 
-func (a testAuthentication) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
+func (a authenticationStub) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
 	if credentials.Password != "verysecret" {
 		return nil, errors.New("invalid password")
 	}
