@@ -5,13 +5,9 @@ import (
 	"errors"
 )
 
-type authenticationStub struct{}
+type AuthenticationStub struct{}
 
-func NewAuthenticationStub() *authenticationStub {
-	return &authenticationStub{}
-}
-
-func (a authenticationStub) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
+func (a AuthenticationStub) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
 	if credentials.Password != "verysecret" {
 		return nil, errors.New("invalid password")
 	}

@@ -10,9 +10,9 @@ import (
 const webPort = "8080"
 
 type server struct {
-	Authentication ports.Authentication
-	Logger         ports.Logger
-	Mailer         ports.Mailer
+	authentication ports.Authentication
+	logger         ports.Logger
+	mailer         ports.Mailer
 }
 
 func NewServer(
@@ -21,9 +21,9 @@ func NewServer(
 	mailer ports.Mailer,
 ) *server {
 	return &server{
-		Authentication: auth,
-		Logger:         logger,
-		Mailer:         mailer,
+		authentication: auth,
+		logger:         logger,
+		mailer:         mailer,
 	}
 }
 

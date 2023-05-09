@@ -3,6 +3,7 @@ package server
 import (
 	"broker/ports"
 	"errors"
+	"log"
 	"net/http"
 )
 
@@ -35,7 +36,7 @@ func (s *server) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) handleAuthenticate(w http.ResponseWriter, payload ports.AuthPayload) {
-	reply, err := s.Authentication.AuthenticateWith(ports.Credentials(payload))
+	reply, err := s.authentication.AuthenticateWith(ports.Credentials(payload))
 	if err != nil {
 		errorJSON(w, err, http.StatusUnauthorized)
 		return
@@ -49,9 +50,10 @@ func (s *server) handleAuthenticate(w http.ResponseWriter, payload ports.AuthPay
 }
 
 func (s *server) handleLog(w http.ResponseWriter, payload ports.LogPayload) {
-	reply, err := s.Logger.Log(ports.Log(payload))
+	reply, err := s.logger.Log(ports.Log(payload))
 	if err != nil {
-		errorJSON(w, err)
+		log.Println(err)
+		errorJSON(w, errors.New("server error on logger"), http.StatusInternalServerError)
 		return
 	}
 
@@ -62,9 +64,10 @@ func (s *server) handleLog(w http.ResponseWriter, payload ports.LogPayload) {
 }
 
 func (s *server) handleMail(w http.ResponseWriter, payload ports.MailPayload) {
-	reply, err := s.Mailer.Send(ports.Mail(payload))
+	reply, err := s.mailer.Send(ports.Mail(payload))
 	if err != nil {
-		errorJSON(w, err)
+		log.Println(err)
+		errorJSON(w, errors.New("server error on mail"), http.StatusInternalServerError)
 		return
 	}
 
