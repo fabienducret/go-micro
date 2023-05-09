@@ -149,8 +149,8 @@ func assertStatusCode(t *testing.T, got, want int) {
 	}
 }
 
-func assertEqual(t *testing.T, got, expected string) {
-	if got != expected {
-		t.Errorf("Test failed got %s, expected %s", got, expected)
+func assertEqual(t *testing.T, got, want string) {
+	if got != want {
+		t.Errorf("Test failed got %s, want %s", got, want)
 	}
 }

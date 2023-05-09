@@ -62,9 +62,9 @@ func assertErrorIsNil(t *testing.T, err error) {
 	}
 }
 
-func assertEqual(t *testing.T, got, expected string) {
-	if got != expected {
-		t.Errorf("Test failed, bad email received %s", got)
+func assertEqual(t *testing.T, got, want string) {
+	if got != want {
+		t.Errorf("Test failed got %s, want %s", got, want)
 	}
 }
 

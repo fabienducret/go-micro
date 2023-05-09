@@ -51,8 +51,8 @@ func assertErrorIsDefined(t *testing.T, err error) {
 	}
 }
 
-func assertEqual(t *testing.T, got, expected string) {
-	if got != expected {
-		t.Errorf("Test failed got %s, expected %s", got, expected)
+func assertEqual(t *testing.T, got, want string) {
+	if got != want {
+		t.Errorf("Test failed got %s, want %s", got, want)
 	}
 }
