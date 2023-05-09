@@ -7,45 +7,69 @@ import (
 )
 
 func TestAuthenticate(t *testing.T) {
-	s := server.NewServer(
-		tests.NewUserRepositoryStub(),
-		tests.NewLoggerStub(),
-	)
+	payloadWithValidPassword := server.Payload{
+		Email:    "test@gmail.com",
+		Password: "password",
+	}
 
-	t.Run("valid_credentials", func(t *testing.T) {
+	payloadWithInvalidPassword := server.Payload{
+		Email:    "test@gmail.com",
+		Password: "toto",
+	}
+
+	t.Run("with valid credentials", func(t *testing.T) {
 		// Given
-		payload := server.Payload{
-			Email:    "test@gmail.com",
-			Password: "password",
-		}
+		s := server.NewServer(tests.UserRepositoryStub{}, tests.LoggerStub{})
 
 		// When
 		var reply server.Identity
-		err := s.Authenticate(payload, &reply)
-		if err != nil {
-			t.Errorf("Test failed with error %s", err)
-		}
+		err := s.Authenticate(payloadWithValidPassword, &reply)
 
 		// Then
-		if reply.Email != "test@gmail.com" {
-			t.Errorf("Test failed, bad email received %s", reply.Email)
-		}
+		assertErrorIsNil(t, err)
+		assertEqual(t, reply.Email, "test@gmail.com")
 	})
 
-	t.Run("invalid_credentials", func(t *testing.T) {
+	t.Run("with invalid credentials", func(t *testing.T) {
 		// Given
-		payload := server.Payload{
-			Email:    "test@gmail.com",
-			Password: "toto",
-		}
+		s := server.NewServer(tests.UserRepositoryStub{}, tests.LoggerStub{})
 
 		// When
-		var reply server.Identity
-		err := s.Authenticate(payload, &reply)
+		err := s.Authenticate(payloadWithInvalidPassword, nil)
 
 		// Then
-		if err == nil {
-			t.Errorf("Error must be defined")
-		}
+		assertErrorIsDefined(t, err)
 	})
+
+	t.Run("error in logger call", func(t *testing.T) {
+		// Given
+		s := server.NewServer(
+			tests.UserRepositoryStub{},
+			tests.LoggerStub{WithError: true},
+		)
+
+		// When
+		err := s.Authenticate(payloadWithValidPassword, nil)
+
+		// Then
+		assertErrorIsDefined(t, err)
+	})
+}
+
+func assertErrorIsNil(t *testing.T, err error) {
+	if err != nil {
+		t.Errorf("Test failed with error %s", err)
+	}
+}
+
+func assertEqual(t *testing.T, got, expected string) {
+	if got != expected {
+		t.Errorf("Test failed, bad email received %s", got)
+	}
+}
+
+func assertErrorIsDefined(t *testing.T, err error) {
+	if err == nil {
+		t.Errorf("Error must be defined")
+	}
 }

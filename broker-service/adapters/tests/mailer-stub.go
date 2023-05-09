@@ -2,13 +2,18 @@ package tests
 
 import (
 	"broker/ports"
+	"errors"
 	"fmt"
 )
 
 type MailerStub struct {
-	Error error
+	WithError bool
 }
 
-func (r MailerStub) Send(mail ports.Mail) (string, error) {
-	return fmt.Sprintf("Message sent to %s", mail.To), r.Error
+func (m MailerStub) Send(mail ports.Mail) (string, error) {
+	if m.WithError {
+		return "", errors.New("error in mailer stub")
+	}
+
+	return fmt.Sprintf("Message sent to %s", mail.To), nil
 }

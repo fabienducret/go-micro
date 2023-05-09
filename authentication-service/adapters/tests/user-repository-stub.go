@@ -4,14 +4,9 @@ import (
 	"authentication/ports"
 )
 
-type userRepositoryStub struct {
-}
+type UserRepositoryStub struct{}
 
-func NewUserRepositoryStub() *userRepositoryStub {
-	return &userRepositoryStub{}
-}
-
-func (r *userRepositoryStub) GetByEmail(email string) (*ports.User, error) {
+func (r UserRepositoryStub) GetByEmail(email string) (*ports.User, error) {
 	user := ports.User{
 		Email:     "test@gmail.com",
 		FirstName: "Homer",
@@ -22,7 +17,7 @@ func (r *userRepositoryStub) GetByEmail(email string) (*ports.User, error) {
 	return &user, nil
 }
 
-func (p *userRepositoryStub) PasswordMatches(u ports.User, plainText string) (bool, error) {
+func (p UserRepositoryStub) PasswordMatches(u ports.User, plainText string) (bool, error) {
 	if u.Password != plainText {
 		return false, nil
 	}

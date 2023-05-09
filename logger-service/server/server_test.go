@@ -7,23 +7,50 @@ import (
 )
 
 func TestLogInfo(t *testing.T) {
-	// Given
-	s := server.NewServer(tests.NewLogRepositoryStub())
 	payload := server.Payload{
 		Name: "testevent",
 		Data: "data to log",
 	}
 
-	// When
-	var reply string
-	err := s.LogInfo(payload, &reply)
+	t.Run("log with success", func(t *testing.T) {
+		// Given
+		s := server.NewServer(tests.LogRepositoryStub{})
 
-	// Then
+		// When
+		var reply string
+		err := s.LogInfo(payload, &reply)
+
+		// Then
+		assertErrorIsNil(t, err)
+		assertEqual(t, reply, "Log handled for:testevent")
+	})
+
+	t.Run("log with error", func(t *testing.T) {
+		// Given
+		s := server.NewServer(tests.LogRepositoryStub{WithError: true})
+
+		// When
+		err := s.LogInfo(payload, nil)
+
+		// Then
+		assertErrorIsDefined(t, err)
+	})
+}
+
+func assertErrorIsNil(t *testing.T, err error) {
 	if err != nil {
 		t.Errorf("Test failed with error %s", err)
 	}
+}
 
-	if reply != "Log handled for:testevent" {
-		t.Errorf("Test failed with reply %s", reply)
+func assertErrorIsDefined(t *testing.T, err error) {
+	if err == nil {
+		t.Error("Error must be defined")
+	}
+}
+
+func assertEqual(t *testing.T, got, expected string) {
+	if got != expected {
+		t.Errorf("Test failed got %s, expected %s", got, expected)
 	}
 }

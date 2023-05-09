@@ -4,7 +4,6 @@ import (
 	"broker/adapters/tests"
 	"broker/server"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -17,6 +16,11 @@ type replyPayload struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 }
+
+const authPayloadWithValidPassword = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"verysecret\"}}"
+const authPayloadWithInvalidPassword = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
+const logPayload = "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
+const mailPayload = "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
 
 func TestServer(t *testing.T) {
 	s := server.NewServer(
@@ -35,13 +39,12 @@ func TestServer(t *testing.T) {
 
 		// Then
 		assertStatusCode(t, httpResponse.Code, http.StatusOK)
-		assertMessage(t, reply.Message, "Hit the broker")
+		assertEqual(t, reply.Message, "Hit the broker")
 	})
 
 	t.Run("handle authenticate with success", func(t *testing.T) {
 		// Given
-		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"verysecret\"}}"
-		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
+		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(authPayloadWithValidPassword))
 
 		// When
 		httpResponse := reponseFrom(s.Routes(), request)
@@ -49,13 +52,12 @@ func TestServer(t *testing.T) {
 
 		// Then
 		assertStatusCode(t, httpResponse.Code, http.StatusAccepted)
-		assertMessage(t, reply.Message, "Authenticated !")
+		assertEqual(t, reply.Message, "Authenticated !")
 	})
 
 	t.Run("handle authenticate with error", func(t *testing.T) {
 		// Given
-		payload := "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
-		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
+		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(authPayloadWithInvalidPassword))
 
 		// When
 		httpResponse := reponseFrom(s.Routes(), request)
@@ -66,8 +68,7 @@ func TestServer(t *testing.T) {
 
 	t.Run("handle logger with success", func(t *testing.T) {
 		// Given
-		payload := "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
-		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
+		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(logPayload))
 
 		// When
 		httpResponse := reponseFrom(s.Routes(), request)
@@ -75,18 +76,17 @@ func TestServer(t *testing.T) {
 
 		// Then
 		assertStatusCode(t, httpResponse.Code, http.StatusAccepted)
-		assertMessage(t, reply.Message, "Log handled for:event")
+		assertEqual(t, reply.Message, "Log handled for:event")
 	})
 
 	t.Run("handle logger with error", func(t *testing.T) {
 		// Given
-		payload := "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
-		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
 		s := server.NewServer(
 			tests.AuthenticationStub{},
-			tests.LoggerStub{Error: errors.New("")},
+			tests.LoggerStub{WithError: true},
 			tests.MailerStub{},
 		)
+		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(logPayload))
 
 		// When
 		httpResponse := reponseFrom(s.Routes(), request)
@@ -94,13 +94,12 @@ func TestServer(t *testing.T) {
 
 		// Then
 		assertStatusCode(t, httpResponse.Code, http.StatusInternalServerError)
-		assertMessage(t, reply.Message, "server error on logger")
+		assertEqual(t, reply.Message, "server error on logger")
 	})
 
 	t.Run("handle mail with success", func(t *testing.T) {
 		// Given
-		payload := "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
-		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
+		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(mailPayload))
 
 		// When
 		httpResponse := reponseFrom(s.Routes(), request)
@@ -108,18 +107,17 @@ func TestServer(t *testing.T) {
 
 		// Then
 		assertStatusCode(t, httpResponse.Code, http.StatusAccepted)
-		assertMessage(t, reply.Message, "Message sent to simpson@gmail.com")
+		assertEqual(t, reply.Message, "Message sent to simpson@gmail.com")
 	})
 
 	t.Run("handle mail with error", func(t *testing.T) {
 		// Given
-		payload := "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
-		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(payload))
 		s := server.NewServer(
 			tests.AuthenticationStub{},
 			tests.LoggerStub{},
-			tests.MailerStub{Error: errors.New("")},
+			tests.MailerStub{WithError: true},
 		)
+		request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(mailPayload))
 
 		// When
 		httpResponse := reponseFrom(s.Routes(), request)
@@ -127,7 +125,7 @@ func TestServer(t *testing.T) {
 
 		// Then
 		assertStatusCode(t, httpResponse.Code, http.StatusInternalServerError)
-		assertMessage(t, reply.Message, "server error on mail")
+		assertEqual(t, reply.Message, "server error on mail")
 	})
 }
 
@@ -151,8 +149,8 @@ func assertStatusCode(t *testing.T, got, want int) {
 	}
 }
 
-func assertMessage(t *testing.T, got, want string) {
-	if got != want {
-		t.Errorf("Test failed for route with message %s", got)
+func assertEqual(t *testing.T, got, expected string) {
+	if got != expected {
+		t.Errorf("Test failed got %s, expected %s", got, expected)
 	}
 }

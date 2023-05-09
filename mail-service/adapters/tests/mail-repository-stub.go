@@ -1,16 +1,18 @@
 package tests
 
 import (
+	"errors"
 	"mailer-service/ports"
 )
 
-type mailRepositoryStub struct {
+type MailRepositoryStub struct {
+	WithError bool
 }
 
-func NewMailRepositoryStub() *mailRepositoryStub {
-	return &mailRepositoryStub{}
-}
+func (m MailRepositoryStub) SendSMTPMessage(msg ports.Message) error {
+	if m.WithError {
+		return errors.New("error in mail repository stub")
+	}
 
-func (r *mailRepositoryStub) SendSMTPMessage(msg ports.Message) error {
 	return nil
 }

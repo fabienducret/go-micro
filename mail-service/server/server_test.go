@@ -7,8 +7,6 @@ import (
 )
 
 func TestSendMail(t *testing.T) {
-	// Given
-	s := server.NewServer(tests.NewMailRepositoryStub())
 	payload := server.Payload{
 		From:    "from@example.com",
 		To:      "homer@example.com",
@@ -16,16 +14,45 @@ func TestSendMail(t *testing.T) {
 		Message: "Hello Homer !",
 	}
 
-	// When
-	var reply string
-	err := s.SendMail(payload, &reply)
+	t.Run("send mail with success", func(t *testing.T) {
+		// Given
+		s := server.NewServer(tests.MailRepositoryStub{})
 
-	// Then
+		// When
+		var reply string
+		err := s.SendMail(payload, &reply)
+
+		// Then
+		assertErrorIsNil(t, err)
+		assertEqual(t, reply, "Message sent to homer@example.com")
+	})
+
+	t.Run("send mail with error", func(t *testing.T) {
+		// Given
+		s := server.NewServer(tests.MailRepositoryStub{WithError: true})
+
+		// When
+		err := s.SendMail(payload, nil)
+
+		// Then
+		assertErrorIsDefined(t, err)
+	})
+}
+
+func assertErrorIsNil(t *testing.T, err error) {
 	if err != nil {
 		t.Errorf("Test failed with error %s", err)
 	}
+}
 
-	if reply != "Message sent to homer@example.com" {
-		t.Errorf("Test failed with reply %s", reply)
+func assertErrorIsDefined(t *testing.T, err error) {
+	if err == nil {
+		t.Error("Error must be defined")
+	}
+}
+
+func assertEqual(t *testing.T, got, expected string) {
+	if got != expected {
+		t.Errorf("Test failed got %s, expected %s", got, expected)
 	}
 }

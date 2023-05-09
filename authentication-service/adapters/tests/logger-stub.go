@@ -1,13 +1,18 @@
 package tests
 
-import "authentication/ports"
+import (
+	"authentication/ports"
+	"errors"
+)
 
-type loggerStub struct{}
-
-func NewLoggerStub() *loggerStub {
-	return &loggerStub{}
+type LoggerStub struct {
+	WithError bool
 }
 
-func (r *loggerStub) Log(toLog ports.Log) error {
+func (l LoggerStub) Log(toLog ports.Log) error {
+	if l.WithError {
+		return errors.New("error in logger stub")
+	}
+
 	return nil
 }
