@@ -1,10 +1,7 @@
 package ports
 
-type LogEntry struct {
-	Name string
-	Data string
-}
+import "log-service/entities"
 
 type LogRepository interface {
-	Insert(LogEntry) error
+	Insert(entities.LogEntry) error
 }
