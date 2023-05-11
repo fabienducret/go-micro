@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"broker/ports"
+	"broker/entities"
 	"net/rpc"
 )
 
@@ -15,7 +15,7 @@ func NewMailer(addr string) *mailer {
 	}
 }
 
-func (r *mailer) Send(mail ports.Mail) (string, error) {
+func (r *mailer) Send(mail entities.Mail) (string, error) {
 	client, err := rpc.Dial("tcp", r.addr)
 	if err != nil {
 		return "", err

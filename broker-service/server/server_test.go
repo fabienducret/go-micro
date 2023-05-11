@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"broker/adapters/tests"
-	"broker/ports"
 	"broker/server"
 	"encoding/json"
 	"net/http"
@@ -16,8 +15,8 @@ import (
 type scenario struct {
 	desc            string
 	inRequest       func() *http.Request
-	logger          ports.Logger
-	mailer          ports.Mailer
+	logger          server.Logger
+	mailer          server.Mailer
 	expectedCode    int
 	expectedMessage string
 }
@@ -114,7 +113,7 @@ func TestServer(t *testing.T) {
 	}
 }
 
-func loggerStubFrom(scenario scenario) ports.Logger {
+func loggerStubFrom(scenario scenario) server.Logger {
 	if scenario.logger != nil {
 		return scenario.logger
 	}
@@ -122,7 +121,7 @@ func loggerStubFrom(scenario scenario) ports.Logger {
 	return tests.LoggerStub{}
 }
 
-func mailerStubFrom(scenario scenario) ports.Mailer {
+func mailerStubFrom(scenario scenario) server.Mailer {
 	if scenario.mailer != nil {
 		return scenario.mailer
 	}

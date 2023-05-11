@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"broker/ports"
+	"broker/entities"
 	"net/rpc"
 )
 
@@ -15,13 +15,13 @@ func NewAuthentication(addr string) *authentication {
 	}
 }
 
-func (a authentication) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
+func (a authentication) AuthenticateWith(credentials entities.Credentials) (*entities.Identity, error) {
 	client, err := rpc.Dial("tcp", a.addr)
 	if err != nil {
 		return nil, err
 	}
 
-	var identity *ports.Identity
+	var identity *entities.Identity
 	err = client.Call("Server.Authenticate", credentials, &identity)
 	if err != nil {
 		return nil, err

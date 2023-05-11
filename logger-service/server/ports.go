@@ -1,4 +1,4 @@
-package ports
+package server
 
 import "log-service/entities"
 

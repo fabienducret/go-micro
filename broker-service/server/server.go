@@ -1,7 +1,6 @@
 package server
 
 import (
-	"broker/ports"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,15 +9,15 @@ import (
 const webPort = "8080"
 
 type server struct {
-	authentication ports.Authentication
-	logger         ports.Logger
-	mailer         ports.Mailer
+	authentication Authentication
+	logger         Logger
+	mailer         Mailer
 }
 
 func NewServer(
-	auth ports.Authentication,
-	logger ports.Logger,
-	mailer ports.Mailer,
+	auth Authentication,
+	logger Logger,
+	mailer Mailer,
 ) *server {
 	return &server{
 		authentication: auth,

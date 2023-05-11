@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"log-service/entities"
-	"log-service/ports"
 	"net"
 	"net/rpc"
 )
@@ -12,7 +11,7 @@ import (
 const port = "5001"
 
 type Server struct {
-	LogRepository ports.LogRepository
+	LogRepository LogRepository
 }
 
 type Payload struct {
@@ -20,8 +19,11 @@ type Payload struct {
 	Data string
 }
 
-func NewServer(lr ports.LogRepository) *Server {
-	return &Server{lr}
+func NewServer(lr LogRepository) *Server {
+	s := new(Server)
+	s.LogRepository = lr
+
+	return s
 }
 
 func (s *Server) Listen() {

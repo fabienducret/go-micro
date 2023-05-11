@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"authentication/ports"
+	"authentication/entities"
 	"net/rpc"
 )
 
@@ -15,7 +15,7 @@ func NewLogger(addr string) *logger {
 	}
 }
 
-func (r *logger) Log(toLog ports.Log) error {
+func (r *logger) Log(toLog entities.Log) error {
 	client, err := rpc.Dial("tcp", r.addr)
 	if err != nil {
 		return err

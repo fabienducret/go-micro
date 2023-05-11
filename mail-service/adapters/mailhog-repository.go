@@ -3,7 +3,7 @@ package adapters
 import (
 	"bytes"
 	"html/template"
-	"mailer-service/ports"
+	"mailer-service/entities"
 	"os"
 	"strconv"
 	"time"
@@ -45,7 +45,7 @@ func NewMailhogRepository() *mailhogRepository {
 	}
 }
 
-func (r *mailhogRepository) SendSMTPMessage(msg ports.Message) error {
+func (r *mailhogRepository) SendSMTPMessage(msg entities.Message) error {
 	if msg.From == "" {
 		msg.From = r.mailer.FromAddress
 	}
@@ -104,7 +104,7 @@ func (r *mailhogRepository) SendSMTPMessage(msg ports.Message) error {
 	return nil
 }
 
-func buildHTMLMessage(msg ports.Message) (string, error) {
+func buildHTMLMessage(msg entities.Message) (string, error) {
 	templateToRender := "./templates/mail.html.gohtml"
 
 	t, err := template.New("email-html").ParseFiles(templateToRender)
@@ -126,7 +126,7 @@ func buildHTMLMessage(msg ports.Message) (string, error) {
 	return formattedMessage, nil
 }
 
-func buildPlainTextMessage(msg ports.Message) (string, error) {
+func buildPlainTextMessage(msg entities.Message) (string, error) {
 	templateToRender := "./templates/mail.plain.gohtml"
 
 	t, err := template.New("email-plain").ParseFiles(templateToRender)

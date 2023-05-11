@@ -1,18 +1,18 @@
 package tests
 
 import (
-	"broker/ports"
+	"broker/entities"
 	"errors"
 )
 
 type AuthenticationStub struct{}
 
-func (a AuthenticationStub) AuthenticateWith(credentials ports.Credentials) (*ports.Identity, error) {
+func (a AuthenticationStub) AuthenticateWith(credentials entities.Credentials) (*entities.Identity, error) {
 	if credentials.Password != "verysecret" {
 		return nil, errors.New("invalid password")
 	}
 
-	identity := ports.Identity{
+	identity := entities.Identity{
 		Email:     "homer@simpson.com",
 		FirstName: "Homer",
 		LastName:  "Simpson",

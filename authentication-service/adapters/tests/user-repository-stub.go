@@ -1,13 +1,13 @@
 package tests
 
 import (
-	"authentication/ports"
+	"authentication/entities"
 )
 
 type UserRepositoryStub struct{}
 
-func (r UserRepositoryStub) GetByEmail(email string) (*ports.User, error) {
-	user := ports.User{
+func (r UserRepositoryStub) GetByEmail(email string) (*entities.User, error) {
+	user := entities.User{
 		Email:     "test@gmail.com",
 		FirstName: "Homer",
 		LastName:  "Simpson",
@@ -17,7 +17,7 @@ func (r UserRepositoryStub) GetByEmail(email string) (*ports.User, error) {
 	return &user, nil
 }
 
-func (p UserRepositoryStub) PasswordMatches(u ports.User, plainText string) (bool, error) {
+func (p UserRepositoryStub) PasswordMatches(u entities.User, plainText string) (bool, error) {
 	if u.Password != plainText {
 		return false, nil
 	}

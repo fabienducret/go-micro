@@ -1,4 +1,4 @@
-package ports
+package entities
 
 type Message struct {
 	From        string
@@ -8,8 +8,4 @@ type Message struct {
 	Attachments []string
 	Data        any
 	DataMap     map[string]any
-}
-
-type MailRepository interface {
-	SendSMTPMessage(Message) error
 }

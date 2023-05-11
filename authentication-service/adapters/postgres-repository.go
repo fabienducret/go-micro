@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"authentication/ports"
+	"authentication/entities"
 	"context"
 	"database/sql"
 	"errors"
@@ -34,7 +34,7 @@ func NewPostgresRepository(db *sql.DB) *PostgresRepository {
 }
 
 // GetByEmail returns one user by email
-func (r *PostgresRepository) GetByEmail(email string) (*ports.User, error) {
+func (r *PostgresRepository) GetByEmail(email string) (*entities.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -58,7 +58,7 @@ func (r *PostgresRepository) GetByEmail(email string) (*ports.User, error) {
 		return nil, err
 	}
 
-	user := ports.User{
+	user := entities.User{
 		Email:     fromDB.Email,
 		FirstName: fromDB.FirstName,
 		LastName:  fromDB.LastName,
@@ -71,7 +71,7 @@ func (r *PostgresRepository) GetByEmail(email string) (*ports.User, error) {
 // PasswordMatches uses Go's bcrypt package to compare a user supplied password
 // with the hash we have stored for a given user in the database. If the password
 // and hash match, we return true; otherwise, we return false.
-func (p *PostgresRepository) PasswordMatches(u ports.User, plainText string) (bool, error) {
+func (p *PostgresRepository) PasswordMatches(u entities.User, plainText string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 	if err != nil {
 		switch {

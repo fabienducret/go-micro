@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
-	"mailer-service/ports"
+	"mailer-service/entities"
 	"net"
 	"net/rpc"
 )
@@ -11,7 +11,7 @@ import (
 const port = "5001"
 
 type Server struct {
-	MailerRepository ports.MailRepository
+	MailerRepository MailRepository
 }
 
 type Payload struct {
@@ -21,7 +21,7 @@ type Payload struct {
 	Message string
 }
 
-func NewServer(mr ports.MailRepository) *Server {
+func NewServer(mr MailRepository) *Server {
 	s := new(Server)
 	s.MailerRepository = mr
 
@@ -51,7 +51,7 @@ func (s *Server) Listen() {
 }
 
 func (s *Server) SendMail(payload Payload, resp *string) error {
-	msg := ports.Message{
+	msg := entities.Message{
 		From:    payload.From,
 		To:      payload.To,
 		Subject: payload.Subject,

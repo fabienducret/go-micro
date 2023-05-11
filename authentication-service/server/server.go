@@ -1,7 +1,7 @@
 package server
 
 import (
-	"authentication/ports"
+	"authentication/entities"
 	"errors"
 	"fmt"
 	"log"
@@ -12,8 +12,8 @@ import (
 const port = "5001"
 
 type Server struct {
-	UserRepository ports.UserRepository
-	Logger         ports.Logger
+	UserRepository UserRepository
+	Logger         Logger
 }
 
 type Payload struct {
@@ -27,7 +27,7 @@ type Identity struct {
 	LastName  string
 }
 
-func NewServer(ur ports.UserRepository, l ports.Logger) *Server {
+func NewServer(ur UserRepository, l Logger) *Server {
 	s := new(Server)
 	s.UserRepository = ur
 	s.Logger = l
@@ -68,7 +68,7 @@ func (s *Server) Authenticate(payload Payload, reply *Identity) error {
 		return errors.New("invalid credentials")
 	}
 
-	toLog := ports.Log{
+	toLog := entities.Log{
 		Name: "authentication",
 		Data: fmt.Sprintf("%s logged in", user.Email),
 	}

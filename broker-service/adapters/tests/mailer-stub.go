@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"broker/ports"
+	"broker/entities"
 	"errors"
 	"fmt"
 )
@@ -10,7 +10,7 @@ type MailerStub struct {
 	WithError bool
 }
 
-func (m MailerStub) Send(mail ports.Mail) (string, error) {
+func (m MailerStub) Send(mail entities.Mail) (string, error) {
 	if m.WithError {
 		return "", errors.New("error in mailer stub")
 	}
