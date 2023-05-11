@@ -3,7 +3,7 @@ package adapters
 import (
 	"context"
 	"log"
-	"log-service/ports"
+	"log-service/entities"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,7 +27,7 @@ func NewMongoRepository(db *mongo.Client) *mongoRepository {
 	}
 }
 
-func (r *mongoRepository) Insert(entry ports.LogEntry) error {
+func (r *mongoRepository) Insert(entry entities.LogEntry) error {
 	collection := r.Client.Database("logs").Collection("logs")
 
 	_, err := collection.InsertOne(context.Background(), logEntry{

@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"log-service/entities"
 	"log-service/ports"
 	"net"
 	"net/rpc"
@@ -20,10 +21,7 @@ type Payload struct {
 }
 
 func NewServer(lr ports.LogRepository) *Server {
-	s := new(Server)
-	s.LogRepository = lr
-
-	return s
+	return &Server{lr}
 }
 
 func (s *Server) Listen() {
@@ -49,7 +47,7 @@ func (s *Server) Listen() {
 }
 
 func (s *Server) LogInfo(payload Payload, resp *string) error {
-	err := s.LogRepository.Insert(ports.LogEntry{
+	err := s.LogRepository.Insert(entities.LogEntry{
 		Name: payload.Name,
 		Data: payload.Data,
 	})
