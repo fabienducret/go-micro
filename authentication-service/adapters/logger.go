@@ -5,11 +5,6 @@ import (
 	"net/rpc"
 )
 
-type payload struct {
-	Name string
-	Data string
-}
-
 type logger struct {
 	addr string
 }
@@ -26,7 +21,7 @@ func (r *logger) Log(toLog ports.Log) error {
 		return err
 	}
 
-	err = client.Call("Server.LogInfo", payload(toLog), nil)
+	err = client.Call("Server.LogInfo", toLog, nil)
 	if err != nil {
 		return err
 	}
