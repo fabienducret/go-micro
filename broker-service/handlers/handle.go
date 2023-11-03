@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"broker/entities"
@@ -31,36 +31,35 @@ type MailPayload struct {
 	Message string `json:"message"`
 }
 
-func (s *server) Broker(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, Payload{
-		Error:   false,
-		Message: "Hit the broker",
-	})
+func HandleFactory(
+	auth Authentication,
+	logger Logger,
+	mailer Mailer,
+) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request RequestPayload
+
+		err := readJSON(w, r, &request)
+		if err != nil {
+			errorJSON(w, err)
+			return
+		}
+
+		switch request.Action {
+		case "auth":
+			handleAuthenticate(w, auth, request.Auth)
+		case "log":
+			handleLog(w, logger, request.Log)
+		case "mail":
+			handleMail(w, mailer, request.Mail)
+		default:
+			errorJSON(w, errors.New("unknown action"))
+		}
+	}
 }
 
-func (s *server) HandleSubmission(w http.ResponseWriter, r *http.Request) {
-	var request RequestPayload
-
-	err := readJSON(w, r, &request)
-	if err != nil {
-		errorJSON(w, err)
-		return
-	}
-
-	switch request.Action {
-	case "auth":
-		s.handleAuthenticate(w, request.Auth)
-	case "log":
-		s.handleLog(w, request.Log)
-	case "mail":
-		s.handleMail(w, request.Mail)
-	default:
-		errorJSON(w, errors.New("unknown action"))
-	}
-}
-
-func (s *server) handleAuthenticate(w http.ResponseWriter, payload AuthPayload) {
-	reply, err := s.authentication.AuthenticateWith(entities.Credentials(payload))
+func handleAuthenticate(w http.ResponseWriter, auth Authentication, payload AuthPayload) {
+	reply, err := auth.AuthenticateWith(entities.Credentials(payload))
 	if err != nil {
 		errorJSON(w, err, http.StatusUnauthorized)
 		return
@@ -73,8 +72,8 @@ func (s *server) handleAuthenticate(w http.ResponseWriter, payload AuthPayload) 
 	})
 }
 
-func (s *server) handleLog(w http.ResponseWriter, payload LogPayload) {
-	reply, err := s.logger.Log(entities.Log(payload))
+func handleLog(w http.ResponseWriter, logger Logger, payload LogPayload) {
+	reply, err := logger.Log(entities.Log(payload))
 	if err != nil {
 		log.Println(err)
 		errorJSON(w, errors.New("server error on logger"), http.StatusInternalServerError)
@@ -87,8 +86,8 @@ func (s *server) handleLog(w http.ResponseWriter, payload LogPayload) {
 	})
 }
 
-func (s *server) handleMail(w http.ResponseWriter, payload MailPayload) {
-	reply, err := s.mailer.Send(entities.Mail(payload))
+func handleMail(w http.ResponseWriter, mailer Mailer, payload MailPayload) {
+	reply, err := mailer.Send(entities.Mail(payload))
 	if err != nil {
 		log.Println(err)
 		errorJSON(w, errors.New("server error on mail"), http.StatusInternalServerError)

@@ -1,22 +1,20 @@
-package server_test
+package handlers_test
 
 import (
 	"broker/adapters/tests"
-	"broker/server"
+	"broker/handlers"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type scenario struct {
 	desc            string
 	inRequest       func() *http.Request
-	logger          server.Logger
-	mailer          server.Mailer
+	logger          handlers.Logger
+	mailer          handlers.Mailer
 	expectedCode    int
 	expectedMessage string
 }
@@ -26,17 +24,8 @@ const authPayloadWithInvalidPassword = "{\"action\":\"auth\",\"auth\":{\"email\"
 const logPayload = "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
 const mailPayload = "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
 
-func TestServer(t *testing.T) {
+func TestHandle(t *testing.T) {
 	scenarios := []scenario{
-		{
-			desc: "handle hit",
-			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/", nil)
-				return request
-			},
-			expectedCode:    http.StatusOK,
-			expectedMessage: "Hit the broker",
-		},
 		{
 			desc: "handle authenticate with success",
 			inRequest: func() *http.Request {
@@ -96,24 +85,26 @@ func TestServer(t *testing.T) {
 	}
 
 	for _, scenario := range scenarios {
-		// Given
-		s := server.NewServer(
-			tests.AuthenticationStub{},
-			loggerStubFrom(scenario),
-			mailerStubFrom(scenario),
-		)
+		// Arrange
+		h := http.HandlerFunc(
+			handlers.HandleFactory(
+				tests.AuthenticationStub{},
+				loggerStubFrom(scenario),
+				mailerStubFrom(scenario),
+			))
 
-		// When
-		response := reponseFrom(s.Routes(), scenario.inRequest())
-		message := messageFrom(response)
+		// Act
+		rr := httptest.NewRecorder()
+		h.ServeHTTP(rr, scenario.inRequest())
+		message := messageFrom(rr)
 
-		// Then
-		assertStatusCode(t, response.Code, scenario.expectedCode)
+		// Assert
+		assertStatusCode(t, rr.Code, scenario.expectedCode)
 		assertEqual(t, message, scenario.expectedMessage)
 	}
 }
 
-func loggerStubFrom(scenario scenario) server.Logger {
+func loggerStubFrom(scenario scenario) handlers.Logger {
 	if scenario.logger != nil {
 		return scenario.logger
 	}
@@ -121,19 +112,12 @@ func loggerStubFrom(scenario scenario) server.Logger {
 	return tests.LoggerStub{}
 }
 
-func mailerStubFrom(scenario scenario) server.Mailer {
+func mailerStubFrom(scenario scenario) handlers.Mailer {
 	if scenario.mailer != nil {
 		return scenario.mailer
 	}
 
 	return tests.MailerStub{}
-}
-
-func reponseFrom(mux *chi.Mux, request *http.Request) *httptest.ResponseRecorder {
-	response := httptest.NewRecorder()
-	mux.ServeHTTP(response, request)
-
-	return response
 }
 
 func messageFrom(response *httptest.ResponseRecorder) string {

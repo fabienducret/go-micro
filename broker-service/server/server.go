@@ -1,35 +1,18 @@
 package server
 
 import (
+	"broker/config"
 	"fmt"
 	"log"
 	"net/http"
 )
 
-type server struct {
-	authentication Authentication
-	logger         Logger
-	mailer         Mailer
-}
-
-func NewServer(
-	auth Authentication,
-	logger Logger,
-	mailer Mailer,
-) *server {
-	return &server{
-		authentication: auth,
-		logger:         logger,
-		mailer:         mailer,
-	}
-}
-
-func (s *server) Run(port string) {
-	log.Printf("Starting broker service on port %s\n", port)
+func Run(c config.Config) {
+	log.Printf("Starting broker service on port %s\n", c.Port)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", port),
-		Handler: s.Routes(),
+		Addr:    fmt.Sprintf(":%s", c.Port),
+		Handler: routes(c),
 	}
 
 	err := server.ListenAndServe()
