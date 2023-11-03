@@ -2,16 +2,18 @@ package main
 
 import (
 	"broker/adapters"
+	"broker/config"
 	"broker/server"
-	"os"
 )
 
 func main() {
-	s := server.NewServer(
-		adapters.NewAuthentication(os.Getenv("AUTHENTICATION_SERVICE_ADDRESS")),
-		adapters.NewLogger(os.Getenv("LOGGER_SERVICE_ADDRESS")),
-		adapters.NewMailer(os.Getenv("MAIL_SERVICE_ADDRESS")),
-	)
+	c := config.Get()
 
-	s.Start()
+	auth := adapters.NewAuthentication(c.AuthenticationServiceAddress, c.AuthenticationServiceMethod)
+	logger := adapters.NewLogger(c.LoggerServiceAddress, c.LoggerServiceMethod)
+	mailer := adapters.NewMailer(c.MailerServiceAddress, c.MailerServiceMethod)
+
+	s := server.NewServer(auth, logger, mailer)
+
+	s.Run()
 }

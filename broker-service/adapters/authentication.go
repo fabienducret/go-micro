@@ -6,12 +6,14 @@ import (
 )
 
 type authentication struct {
-	addr string
+	addr   string
+	method string
 }
 
-func NewAuthentication(addr string) *authentication {
+func NewAuthentication(addr, method string) *authentication {
 	return &authentication{
-		addr: addr,
+		addr,
+		method,
 	}
 }
 
@@ -22,7 +24,7 @@ func (a authentication) AuthenticateWith(credentials entities.Credentials) (*ent
 	}
 
 	var identity *entities.Identity
-	err = client.Call("Server.Authenticate", credentials, &identity)
+	err = client.Call(a.method, credentials, &identity)
 	if err != nil {
 		return nil, err
 	}

@@ -26,7 +26,7 @@ func NewServer(
 	}
 }
 
-func (s *server) Start() {
+func (s *server) Run() {
 	log.Printf("Starting broker service on port %s\n", webPort)
 
 	server := &http.Server{

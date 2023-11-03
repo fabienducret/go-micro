@@ -6,12 +6,14 @@ import (
 )
 
 type mailer struct {
-	addr string
+	addr   string
+	method string
 }
 
-func NewMailer(addr string) *mailer {
+func NewMailer(addr, method string) *mailer {
 	return &mailer{
-		addr: addr,
+		addr,
+		method,
 	}
 }
 
@@ -22,7 +24,7 @@ func (r *mailer) Send(mail entities.Mail) (string, error) {
 	}
 
 	var reply string
-	err = client.Call("Server.SendMail", mail, &reply)
+	err = client.Call(r.method, mail, &reply)
 	if err != nil {
 		return "", err
 	}

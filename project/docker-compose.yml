@@ -11,9 +11,13 @@ services:
       mode: replicated
       replicas: 1
     environment:
+      PORT: 8080
       AUTHENTICATION_SERVICE_ADDRESS: authentication-service:5001
+      AUTHENTICATION_SERVICE_METHOD: Server.Authenticate
       LOGGER_SERVICE_ADDRESS: logger-service:5001
+      LOGGER_SERVICE_METHOD: Server.LogInfo
       MAIL_SERVICE_ADDRESS: mail-service:5001
+      MAIL_SERVICE_METHOD: Server.SendMail
 
   logger-service:
     build:
