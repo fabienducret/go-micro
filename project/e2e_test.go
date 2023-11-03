@@ -19,7 +19,8 @@ type scenario struct {
 	expectedMessage string
 }
 
-const authPayload = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
+const authPayloadWithSuccess = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"verysecret\"}}"
+const authPayloadWithError = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
 const logPayload = "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
 const mailPayload = "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
 const url = "http://localhost:8080/handle"
@@ -47,9 +48,18 @@ func TestE2E(t *testing.T) {
 			expectedMessage: "Message sent to simpson@gmail.com",
 		},
 		{
-			desc: "should return error for bad authentication",
+			desc: "should authenticate a user with success",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(authPayload))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(authPayloadWithSuccess))
+				return request
+			},
+			expectedCode:    http.StatusAccepted,
+			expectedMessage: "Authenticated !",
+		},
+		{
+			desc: "should return an error for bad authentication",
+			inRequest: func() *http.Request {
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(authPayloadWithError))
 				return request
 			},
 			expectedCode:    http.StatusUnauthorized,
