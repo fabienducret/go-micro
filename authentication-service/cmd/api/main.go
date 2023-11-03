@@ -2,10 +2,10 @@ package main
 
 import (
 	"authentication/adapters"
+	"authentication/config"
 	"authentication/db"
 	"authentication/server"
 	"log"
-	"os"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
@@ -14,16 +14,17 @@ import (
 
 func main() {
 	log.Println("Starting authentication service")
+	c := config.Get()
 
-	conn := db.Connect(os.Getenv("DSN"))
+	conn := db.Connect(c.DatabaseDsn)
 	if conn == nil {
 		log.Panic("Can't connect to Postgres")
 	}
 
 	s := server.NewServer(
 		adapters.NewPostgresRepository(conn),
-		adapters.NewLogger(os.Getenv("LOGGER_SERVICE_ADDRESS")),
+		adapters.NewLogger(c.LoggerServiceAddress),
 	)
 
-	s.Listen()
+	s.Listen(c.Port)
 }

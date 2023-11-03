@@ -3,15 +3,16 @@ package main
 import (
 	"log"
 	"log-service/adapters"
+	"log-service/config"
 	"log-service/db"
 	"log-service/server"
-	"os"
 )
 
 func main() {
 	log.Println("Starting logger service")
+	c := config.Get()
 
-	client, err := db.Connect(os.Getenv("MONGO_URL"))
+	client, err := db.Connect(c.MongoUrl)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -19,5 +20,5 @@ func main() {
 
 	s := server.NewServer(adapters.NewMongoRepository(client))
 
-	s.Listen()
+	s.Listen(c.Port)
 }

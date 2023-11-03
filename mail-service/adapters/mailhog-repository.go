@@ -3,8 +3,8 @@ package adapters
 import (
 	"bytes"
 	"html/template"
+	"mailer-service/config"
 	"mailer-service/entities"
-	"os"
 	"strconv"
 	"time"
 
@@ -27,17 +27,17 @@ type mailhogRepository struct {
 	mailer Mailer
 }
 
-func NewMailhogRepository() *mailhogRepository {
-	port, _ := strconv.Atoi(os.Getenv("MAIL_PORT"))
+func NewMailhogRepository(c config.Config) *mailhogRepository {
+	port, _ := strconv.Atoi(c.MailPort)
 	m := Mailer{
-		Domain:      os.Getenv("MAIL_DOMAIN"),
-		Host:        os.Getenv("MAIL_HOST"),
+		Domain:      c.MailDomain,
+		Host:        c.MailHost,
 		Port:        port,
-		Username:    os.Getenv("MAIL_USERNAME"),
-		Password:    os.Getenv("MAIL_PASSWORD"),
-		Encryption:  os.Getenv("MAIL_ENCRYPTION"),
-		FromName:    os.Getenv("FROM_NAME"),
-		FromAddress: os.Getenv("FROM_ADDRESS"),
+		Username:    c.MailUsername,
+		Password:    c.MailPassword,
+		Encryption:  c.MailEncryption,
+		FromName:    c.FromName,
+		FromAddress: c.FromAddress,
 	}
 
 	return &mailhogRepository{

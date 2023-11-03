@@ -6,8 +6,6 @@ import (
 	"net/http"
 )
 
-const webPort = "8080"
-
 type server struct {
 	authentication Authentication
 	logger         Logger
@@ -26,11 +24,11 @@ func NewServer(
 	}
 }
 
-func (s *server) Run() {
-	log.Printf("Starting broker service on port %s\n", webPort)
+func (s *server) Run(port string) {
+	log.Printf("Starting broker service on port %s\n", port)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: s.Routes(),
 	}
 

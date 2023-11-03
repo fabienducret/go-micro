@@ -8,8 +8,6 @@ import (
 	"net/rpc"
 )
 
-const port = "5001"
-
 type Server struct {
 	LogRepository LogRepository
 }
@@ -26,7 +24,7 @@ func NewServer(lr LogRepository) *Server {
 	return s
 }
 
-func (s *Server) Listen() {
+func (s *Server) Listen(port string) {
 	err := rpc.Register(s)
 	if err != nil {
 		log.Fatal(err)

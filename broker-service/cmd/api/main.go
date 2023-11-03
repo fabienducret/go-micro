@@ -15,5 +15,5 @@ func main() {
 
 	s := server.NewServer(auth, logger, mailer)
 
-	s.Run()
+	s.Run(c.Port)
 }
