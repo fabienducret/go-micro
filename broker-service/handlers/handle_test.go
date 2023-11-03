@@ -8,6 +8,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type scenario struct {
@@ -96,11 +98,14 @@ func TestHandle(t *testing.T) {
 		// Act
 		rr := httptest.NewRecorder()
 		h.ServeHTTP(rr, scenario.inRequest())
-		message := messageFrom(rr)
+		var reply struct {
+			Message string `json:"message"`
+		}
+		json.Unmarshal(rr.Body.Bytes(), &reply)
 
 		// Assert
-		assertStatusCode(t, rr.Code, scenario.expectedCode)
-		assertEqual(t, message, scenario.expectedMessage)
+		assert.Equal(t, rr.Code, scenario.expectedCode)
+		assert.Equal(t, reply.Message, scenario.expectedMessage)
 	}
 }
 
@@ -118,26 +123,4 @@ func mailerStubFrom(scenario scenario) handlers.Mailer {
 	}
 
 	return tests.MailerStub{}
-}
-
-func messageFrom(response *httptest.ResponseRecorder) string {
-	var reply struct {
-		Error   bool   `json:"error"`
-		Message string `json:"message"`
-	}
-	json.Unmarshal(response.Body.Bytes(), &reply)
-
-	return reply.Message
-}
-
-func assertStatusCode(t *testing.T, got, want int) {
-	if got != want {
-		t.Errorf("Test failed for route with status code, got %v, want %v", got, want)
-	}
-}
-
-func assertEqual(t *testing.T, got, want string) {
-	if got != want {
-		t.Errorf("Test failed got %s, want %s", got, want)
-	}
 }
