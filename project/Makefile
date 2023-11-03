@@ -25,4 +25,5 @@ test_unit:
 	cd ../mail-service && go test -v ./...
 
 test_e2e:
-	@echo "To be implemented"
+	go mod tidy
+	go test -v ./...

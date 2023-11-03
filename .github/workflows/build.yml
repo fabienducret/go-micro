@@ -3,7 +3,7 @@ name: Go Micro - build
 on: [push]
 
 jobs:
-  test-unit:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -11,8 +11,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
+          go-version: '1.21'
 
-      - name: Unit test services
+      - name: Unit tests
         run: cd project && make test_unit
 
+      - name: Tests e2e
+        run: cd project && make test_e2e

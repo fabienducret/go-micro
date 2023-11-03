@@ -86,26 +86,28 @@ func TestHandle(t *testing.T) {
 		},
 	}
 
-	for _, scenario := range scenarios {
-		// Arrange
-		h := http.HandlerFunc(
-			handlers.HandleFactory(
-				tests.AuthenticationStub{},
-				loggerStubFrom(scenario),
-				mailerStubFrom(scenario),
-			))
+	for _, s := range scenarios {
+		t.Run(s.desc, func(t *testing.T) {
+			// Arrange
+			h := http.HandlerFunc(
+				handlers.HandleFactory(
+					tests.AuthenticationStub{},
+					loggerStubFrom(s),
+					mailerStubFrom(s),
+				))
 
-		// Act
-		rr := httptest.NewRecorder()
-		h.ServeHTTP(rr, scenario.inRequest())
-		var reply struct {
-			Message string `json:"message"`
-		}
-		json.Unmarshal(rr.Body.Bytes(), &reply)
+			// Act
+			rr := httptest.NewRecorder()
+			h.ServeHTTP(rr, s.inRequest())
+			var reply struct {
+				Message string `json:"message"`
+			}
+			json.Unmarshal(rr.Body.Bytes(), &reply)
 
-		// Assert
-		assert.Equal(t, rr.Code, scenario.expectedCode)
-		assert.Equal(t, reply.Message, scenario.expectedMessage)
+			// Assert
+			assert.Equal(t, rr.Code, s.expectedCode)
+			assert.Equal(t, reply.Message, s.expectedMessage)
+		})
 	}
 }
 
