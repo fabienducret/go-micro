@@ -21,7 +21,7 @@ func main() {
 		log.Panic("Can't connect to Postgres")
 	}
 
-	s := server.NewServer(
+	s := server.New(
 		adapters.NewPostgresRepository(conn),
 		adapters.NewLogger(c.LoggerServiceAddress),
 	)

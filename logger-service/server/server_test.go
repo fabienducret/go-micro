@@ -14,7 +14,7 @@ func TestLogInfo(t *testing.T) {
 
 	t.Run("log with success", func(t *testing.T) {
 		// Given
-		s := server.NewServer(tests.LogRepositoryStub{})
+		s := server.New(tests.LogRepositoryStub{})
 
 		// When
 		var reply string
@@ -27,7 +27,7 @@ func TestLogInfo(t *testing.T) {
 
 	t.Run("log with error", func(t *testing.T) {
 		// Given
-		s := server.NewServer(tests.LogRepositoryStub{WithError: true})
+		s := server.New(tests.LogRepositoryStub{WithError: true})
 
 		// When
 		err := s.LogInfo(payload, nil)

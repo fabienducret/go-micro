@@ -16,7 +16,7 @@ func TestSendMail(t *testing.T) {
 
 	t.Run("send mail with success", func(t *testing.T) {
 		// Given
-		s := server.NewServer(tests.MailRepositoryStub{})
+		s := server.New(tests.MailRepositoryStub{})
 
 		// When
 		var reply string
@@ -29,7 +29,7 @@ func TestSendMail(t *testing.T) {
 
 	t.Run("send mail with error", func(t *testing.T) {
 		// Given
-		s := server.NewServer(tests.MailRepositoryStub{WithError: true})
+		s := server.New(tests.MailRepositoryStub{WithError: true})
 
 		// When
 		err := s.SendMail(payload, nil)

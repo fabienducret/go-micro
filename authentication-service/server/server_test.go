@@ -19,7 +19,7 @@ func TestAuthenticate(t *testing.T) {
 
 	t.Run("with valid credentials", func(t *testing.T) {
 		// Given
-		s := server.NewServer(tests.UserRepositoryStub{}, tests.LoggerStub{})
+		s := server.New(tests.UserRepositoryStub{}, tests.LoggerStub{})
 
 		// When
 		var reply server.Identity
@@ -32,7 +32,7 @@ func TestAuthenticate(t *testing.T) {
 
 	t.Run("with invalid credentials", func(t *testing.T) {
 		// Given
-		s := server.NewServer(tests.UserRepositoryStub{}, tests.LoggerStub{})
+		s := server.New(tests.UserRepositoryStub{}, tests.LoggerStub{})
 
 		// When
 		err := s.Authenticate(payloadWithInvalidPassword, nil)
@@ -43,7 +43,7 @@ func TestAuthenticate(t *testing.T) {
 
 	t.Run("error in logger call", func(t *testing.T) {
 		// Given
-		s := server.NewServer(
+		s := server.New(
 			tests.UserRepositoryStub{},
 			tests.LoggerStub{WithError: true},
 		)

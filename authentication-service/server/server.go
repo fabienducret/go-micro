@@ -25,7 +25,7 @@ type Identity struct {
 	LastName  string
 }
 
-func NewServer(ur UserRepository, l Logger) *Server {
+func New(ur UserRepository, l Logger) *Server {
 	s := new(Server)
 	s.UserRepository = ur
 	s.Logger = l

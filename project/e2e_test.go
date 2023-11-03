@@ -23,7 +23,7 @@ const authPayloadWithSuccess = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin
 const authPayloadWithError = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
 const logPayload = "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
 const mailPayload = "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
-const url = "http://localhost:8080/handle"
+const url = "http://localhost:8080/message"
 
 func TestE2E(t *testing.T) {
 	prepareCompose(t)

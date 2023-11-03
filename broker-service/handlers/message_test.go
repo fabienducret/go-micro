@@ -25,13 +25,14 @@ const authPayloadWithValidPassword = "{\"action\":\"auth\",\"auth\":{\"email\":\
 const authPayloadWithInvalidPassword = "{\"action\":\"auth\",\"auth\":{\"email\":\"admin@example.com\",\"password\":\"badpassword\"}}"
 const logPayload = "{\"action\":\"log\",\"log\":{\"name\":\"event\",\"data\":\"hello world\"}}"
 const mailPayload = "{\"action\":\"mail\",\"mail\":{\"from\":\"homer@gmail.com\",\"to\":\"simpson@gmail.com\"}}"
+const url = "/message"
 
-func TestHandle(t *testing.T) {
+func TestMessage(t *testing.T) {
 	scenarios := []scenario{
 		{
 			desc: "handle authenticate with success",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(authPayloadWithValidPassword))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(authPayloadWithValidPassword))
 				return request
 			},
 			expectedCode:    http.StatusAccepted,
@@ -40,7 +41,7 @@ func TestHandle(t *testing.T) {
 		{
 			desc: "handle authenticate with error",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(authPayloadWithInvalidPassword))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(authPayloadWithInvalidPassword))
 				return request
 			},
 			expectedCode:    http.StatusUnauthorized,
@@ -49,7 +50,7 @@ func TestHandle(t *testing.T) {
 		{
 			desc: "handle logger with success",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(logPayload))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(logPayload))
 				return request
 			},
 			expectedCode:    http.StatusAccepted,
@@ -58,7 +59,7 @@ func TestHandle(t *testing.T) {
 		{
 			desc: "handle logger with error",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(logPayload))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(logPayload))
 				return request
 			},
 			logger:          tests.LoggerStub{WithError: true},
@@ -68,7 +69,7 @@ func TestHandle(t *testing.T) {
 		{
 			desc: "handle mail with success",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(mailPayload))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(mailPayload))
 				return request
 			},
 			expectedCode:    http.StatusAccepted,
@@ -77,7 +78,7 @@ func TestHandle(t *testing.T) {
 		{
 			desc: "handle mail with error",
 			inRequest: func() *http.Request {
-				request, _ := http.NewRequest(http.MethodPost, "/handle", strings.NewReader(mailPayload))
+				request, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(mailPayload))
 				return request
 			},
 			mailer:          tests.MailerStub{WithError: true},
@@ -90,7 +91,7 @@ func TestHandle(t *testing.T) {
 		t.Run(s.desc, func(t *testing.T) {
 			// Arrange
 			h := http.HandlerFunc(
-				handlers.HandleFactory(
+				handlers.MessageFactory(
 					tests.AuthenticationStub{},
 					loggerStubFrom(s),
 					mailerStubFrom(s),

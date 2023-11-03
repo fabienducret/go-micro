@@ -21,7 +21,7 @@ type Payload struct {
 	Message string
 }
 
-func NewServer(mr MailRepository) *Server {
+func New(mr MailRepository) *Server {
 	s := new(Server)
 	s.MailerRepository = mr
 

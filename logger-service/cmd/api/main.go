@@ -18,7 +18,7 @@ func main() {
 	}
 	defer db.Disconnect(client)
 
-	s := server.NewServer(adapters.NewMongoRepository(client))
+	s := server.New(adapters.NewMongoRepository(client))
 
 	s.Listen(c.Port)
 }

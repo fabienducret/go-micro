@@ -27,15 +27,15 @@ func routes(c config.Config) *chi.Mux {
 
 	mux.Post("/", handlers.Broker)
 
-	mux.Post("/handle", handle(c))
+	mux.Post("/message", message(c))
 
 	return mux
 }
 
-func handle(c config.Config) func(w http.ResponseWriter, r *http.Request) {
+func message(c config.Config) func(w http.ResponseWriter, r *http.Request) {
 	auth := adapters.NewAuthentication(c.AuthenticationServiceAddress, c.AuthenticationServiceMethod)
 	logger := adapters.NewLogger(c.LoggerServiceAddress, c.LoggerServiceMethod)
 	mailer := adapters.NewMailer(c.MailerServiceAddress, c.MailerServiceMethod)
 
-	return handlers.HandleFactory(auth, logger, mailer)
+	return handlers.MessageFactory(auth, logger, mailer)
 }

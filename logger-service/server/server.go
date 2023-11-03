@@ -17,7 +17,7 @@ type Payload struct {
 	Data string
 }
 
-func NewServer(lr LogRepository) *Server {
+func New(lr LogRepository) *Server {
 	s := new(Server)
 	s.LogRepository = lr
 

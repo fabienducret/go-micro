@@ -67,7 +67,7 @@ Response
 Request
 
 ```bash
-curl -X POST http://localhost:8080/handle \
+curl -X POST http://localhost:8080/message \
 -H "Content-Type: application/json" \
 -d '{"action":"auth","auth":{"email":"admin@example.com","password":"verysecret"}}'
 ```
@@ -102,7 +102,7 @@ Response with invalid credentials
 Request
 
 ```bash
-curl -X POST http://localhost:8080/handle \
+curl -X POST http://localhost:8080/message \
 -H "Content-Type: application/json" \
 -d '{"action":"log","log":{"name":"event","data":"Hello world !"}}'
 ```
@@ -123,7 +123,7 @@ Response
 Request
 
 ```bash
-curl -X POST http://localhost:8080/handle \
+curl -X POST http://localhost:8080/message \
 -H "Content-Type: application/json" \
 -d '{"action":"mail","mail":{"from": "me@example.com", "to": "you@example.com", "subject": "Test email", "message": "Hello world"}}'
 ```

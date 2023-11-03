@@ -7,11 +7,12 @@ import (
 	"net/http"
 )
 
-func Run(c config.Config) {
-	log.Printf("Starting broker service on port %s\n", c.Port)
+func RunWith(c config.Config) {
+	port := c.Port
+	log.Printf("Starting broker service on port %s\n", port)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", c.Port),
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: routes(c),
 	}
 

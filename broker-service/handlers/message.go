@@ -31,7 +31,7 @@ type MailPayload struct {
 	Message string `json:"message"`
 }
 
-func HandleFactory(
+func MessageFactory(
 	auth Authentication,
 	logger Logger,
 	mailer Mailer,

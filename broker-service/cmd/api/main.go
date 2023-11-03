@@ -7,5 +7,6 @@ import (
 
 func main() {
 	c := config.Get()
-	server.Run(c)
+
+	server.RunWith(c)
 }
