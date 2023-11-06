@@ -6,12 +6,14 @@ import (
 )
 
 type logger struct {
-	addr string
+	addr   string
+	method string
 }
 
-func NewLogger(addr string) *logger {
+func NewLogger(addr, method string) *logger {
 	return &logger{
-		addr: addr,
+		addr,
+		method,
 	}
 }
 
@@ -21,7 +23,7 @@ func (r *logger) Log(toLog entities.Log) error {
 		return err
 	}
 
-	err = client.Call("Server.LogInfo", toLog, nil)
+	err = client.Call(r.method, toLog, nil)
 	if err != nil {
 		return err
 	}

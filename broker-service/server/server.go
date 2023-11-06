@@ -13,7 +13,7 @@ func RunWith(c config.Config) {
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
-		Handler: routes(c),
+		Handler: initHandlersWith(c),
 	}
 
 	err := server.ListenAndServe()

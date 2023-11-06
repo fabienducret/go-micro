@@ -5,7 +5,8 @@ import (
 	"log-service/adapters"
 	"log-service/config"
 	"log-service/db"
-	"log-service/server"
+	"log-service/listener"
+	"log-service/logger"
 )
 
 func main() {
@@ -18,7 +19,11 @@ func main() {
 	}
 	defer db.Disconnect(client)
 
-	s := server.New(adapters.NewMongoRepository(client))
+	logger := logger.New(adapters.NewMongoRepository(client))
+	l := listener.New(logger)
 
-	s.Listen(c.Port)
+	err = l.Listen(c.Port)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -1,15 +1,21 @@
-package server
+package authentication
 
 import (
 	"authentication/entities"
 	"errors"
 	"fmt"
-	"log"
-	"net"
-	"net/rpc"
 )
 
-type Server struct {
+type Logger interface {
+	Log(entities.Log) error
+}
+
+type UserRepository interface {
+	GetByEmail(email string) (*entities.User, error)
+	PasswordMatches(u entities.User, plainText string) (bool, error)
+}
+
+type Authentication struct {
 	UserRepository UserRepository
 	Logger         Logger
 }
@@ -25,37 +31,15 @@ type Identity struct {
 	LastName  string
 }
 
-func New(ur UserRepository, l Logger) *Server {
-	s := new(Server)
+func New(ur UserRepository, l Logger) *Authentication {
+	s := new(Authentication)
 	s.UserRepository = ur
 	s.Logger = l
 
 	return s
 }
 
-func (s *Server) Listen(port string) {
-	err := rpc.Register(s)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Starting RPC server on port ", port)
-	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer listener.Close()
-
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			continue
-		}
-		go rpc.ServeConn(conn)
-	}
-}
-
-func (s *Server) Authenticate(payload Payload, reply *Identity) error {
+func (s *Authentication) Authenticate(payload Payload, reply *Identity) error {
 	user, err := s.UserRepository.GetByEmail(payload.Email)
 	if err != nil {
 		return errors.New("invalid credentials")

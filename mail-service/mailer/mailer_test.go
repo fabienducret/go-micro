@@ -1,13 +1,13 @@
-package server_test
+package mailer_test
 
 import (
 	"mailer-service/adapters/tests"
-	"mailer-service/server"
+	"mailer-service/mailer"
 	"testing"
 )
 
 func TestSendMail(t *testing.T) {
-	payload := server.Payload{
+	payload := mailer.Payload{
 		From:    "from@example.com",
 		To:      "homer@example.com",
 		Subject: "Subject",
@@ -16,7 +16,7 @@ func TestSendMail(t *testing.T) {
 
 	t.Run("send mail with success", func(t *testing.T) {
 		// Given
-		s := server.New(tests.MailRepositoryStub{})
+		s := mailer.New(tests.MailRepositoryStub{})
 
 		// When
 		var reply string
@@ -29,7 +29,7 @@ func TestSendMail(t *testing.T) {
 
 	t.Run("send mail with error", func(t *testing.T) {
 		// Given
-		s := server.New(tests.MailRepositoryStub{WithError: true})
+		s := mailer.New(tests.MailRepositoryStub{WithError: true})
 
 		// When
 		err := s.SendMail(payload, nil)

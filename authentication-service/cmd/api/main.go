@@ -2,9 +2,10 @@ package main
 
 import (
 	"authentication/adapters"
+	"authentication/authentication"
 	"authentication/config"
 	"authentication/db"
-	"authentication/server"
+	"authentication/listener"
 	"log"
 
 	_ "github.com/jackc/pgconn"
@@ -21,10 +22,14 @@ func main() {
 		log.Panic("Can't connect to Postgres")
 	}
 
-	s := server.New(
+	a := authentication.New(
 		adapters.NewPostgresRepository(conn),
-		adapters.NewLogger(c.LoggerServiceAddress),
+		adapters.NewLogger(c.LoggerServiceAddress, c.LoggerServiceMethod),
 	)
+	l := listener.New(a)
 
-	s.Listen(c.Port)
+	err := l.Listen(c.Port)
+	if err != nil {
+		panic(err)
+	}
 }

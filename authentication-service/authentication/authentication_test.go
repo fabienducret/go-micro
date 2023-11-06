@@ -1,28 +1,28 @@
-package server_test
+package authentication_test
 
 import (
 	"authentication/adapters/tests"
-	"authentication/server"
+	"authentication/authentication"
 	"testing"
 )
 
 func TestAuthenticate(t *testing.T) {
-	payloadWithValidPassword := server.Payload{
+	payloadWithValidPassword := authentication.Payload{
 		Email:    "test@gmail.com",
 		Password: "password",
 	}
 
-	payloadWithInvalidPassword := server.Payload{
+	payloadWithInvalidPassword := authentication.Payload{
 		Email:    "test@gmail.com",
 		Password: "toto",
 	}
 
 	t.Run("with valid credentials", func(t *testing.T) {
 		// Given
-		s := server.New(tests.UserRepositoryStub{}, tests.LoggerStub{})
+		s := authentication.New(tests.UserRepositoryStub{}, tests.LoggerStub{})
 
 		// When
-		var reply server.Identity
+		var reply authentication.Identity
 		err := s.Authenticate(payloadWithValidPassword, &reply)
 
 		// Then
@@ -32,7 +32,7 @@ func TestAuthenticate(t *testing.T) {
 
 	t.Run("with invalid credentials", func(t *testing.T) {
 		// Given
-		s := server.New(tests.UserRepositoryStub{}, tests.LoggerStub{})
+		s := authentication.New(tests.UserRepositoryStub{}, tests.LoggerStub{})
 
 		// When
 		err := s.Authenticate(payloadWithInvalidPassword, nil)
@@ -43,7 +43,7 @@ func TestAuthenticate(t *testing.T) {
 
 	t.Run("error in logger call", func(t *testing.T) {
 		// Given
-		s := server.New(
+		s := authentication.New(
 			tests.UserRepositoryStub{},
 			tests.LoggerStub{WithError: true},
 		)

@@ -1,20 +1,20 @@
-package server_test
+package logger_test
 
 import (
 	"log-service/adapters/tests"
-	"log-service/server"
+	"log-service/logger"
 	"testing"
 )
 
 func TestLogInfo(t *testing.T) {
-	payload := server.Payload{
+	payload := logger.Payload{
 		Name: "testevent",
 		Data: "data to log",
 	}
 
 	t.Run("log with success", func(t *testing.T) {
 		// Given
-		s := server.New(tests.LogRepositoryStub{})
+		s := logger.New(tests.LogRepositoryStub{})
 
 		// When
 		var reply string
@@ -27,7 +27,7 @@ func TestLogInfo(t *testing.T) {
 
 	t.Run("log with error", func(t *testing.T) {
 		// Given
-		s := server.New(tests.LogRepositoryStub{WithError: true})
+		s := logger.New(tests.LogRepositoryStub{WithError: true})
 
 		// When
 		err := s.LogInfo(payload, nil)

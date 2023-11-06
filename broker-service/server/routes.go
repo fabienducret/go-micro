@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func routes(c config.Config) *chi.Mux {
+func initHandlersWith(c config.Config) *chi.Mux {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{
