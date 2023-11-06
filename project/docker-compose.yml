@@ -13,11 +13,11 @@ services:
     environment:
       PORT: 8080
       AUTHENTICATION_SERVICE_ADDRESS: authentication-service:5001
-      AUTHENTICATION_SERVICE_METHOD: Server.Authenticate
+      AUTHENTICATION_SERVICE_METHOD: Authentication.Authenticate
       LOGGER_SERVICE_ADDRESS: logger-service:5001
-      LOGGER_SERVICE_METHOD: Server.LogInfo
+      LOGGER_SERVICE_METHOD: Logger.LogInfo
       MAIL_SERVICE_ADDRESS: mail-service:5001
-      MAIL_SERVICE_METHOD: Server.SendMail
+      MAIL_SERVICE_METHOD: Mailer.SendMail
 
   logger-service:
     build:
@@ -41,6 +41,7 @@ services:
       PORT: 5001
       DSN: 'host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5'
       LOGGER_SERVICE_ADDRESS: logger-service:5001
+      LOGGER_SERVICE_METHOD: Logger.LogInfo
 
   mail-service:
     build:
