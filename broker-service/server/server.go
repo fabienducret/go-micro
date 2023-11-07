@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func RunWith(c config.Config) {
+func RunWith(c config.Config) error {
 	port := c.Port
 	log.Printf("Starting broker service on port %s\n", port)
 
@@ -16,8 +16,5 @@ func RunWith(c config.Config) {
 		Handler: initHandlersWith(c),
 	}
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Panic(err)
-	}
+	return server.ListenAndServe()
 }

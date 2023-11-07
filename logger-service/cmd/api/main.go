@@ -22,8 +22,7 @@ func main() {
 	logger := logger.New(adapters.NewMongoRepository(client))
 	l := listener.New(logger)
 
-	err = l.Listen(c.Port)
-	if err != nil {
+	if err := l.Listen(c.Port); err != nil {
 		panic(err)
 	}
 }

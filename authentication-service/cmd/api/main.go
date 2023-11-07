@@ -19,7 +19,7 @@ func main() {
 
 	conn := db.Connect(c.DatabaseDsn)
 	if conn == nil {
-		log.Panic("Can't connect to Postgres")
+		panic("Can't connect to Postgres")
 	}
 
 	a := authentication.New(
@@ -28,8 +28,7 @@ func main() {
 	)
 	l := listener.New(a)
 
-	err := l.Listen(c.Port)
-	if err != nil {
+	if err := l.Listen(c.Port); err != nil {
 		panic(err)
 	}
 }

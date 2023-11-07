@@ -12,12 +12,12 @@ import (
 
 func TestBroker(t *testing.T) {
 	// Arrange
-	h := http.HandlerFunc(handlers.Broker)
+	sut := http.HandlerFunc(handlers.Broker)
 	rr := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/", nil)
 
 	// Act
-	h.ServeHTTP(rr, req)
+	sut.ServeHTTP(rr, req)
 	var reply struct {
 		Message string `json:"message"`
 	}

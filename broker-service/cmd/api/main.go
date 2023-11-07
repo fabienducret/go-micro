@@ -8,5 +8,7 @@ import (
 func main() {
 	c := config.Get()
 
-	server.RunWith(c)
+	if err := server.RunWith(c); err != nil {
+		panic(err)
+	}
 }
