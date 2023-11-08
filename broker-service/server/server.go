@@ -1,19 +1,30 @@
 package server
 
 import (
-	"broker/config"
 	"fmt"
 	"log"
 	"net/http"
 )
 
-func RunWith(c config.Config) error {
-	port := c.Port
+type Handlers struct {
+	Broker  http.HandlerFunc
+	Message http.HandlerFunc
+}
+
+type server struct {
+	handlers Handlers
+}
+
+func New(h Handlers) *server {
+	return &server{h}
+}
+
+func (s *server) Run(port string) error {
 	log.Printf("Starting broker service on port %s\n", port)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
-		Handler: initHandlersWith(c),
+		Handler: s.initHandlers(),
 	}
 
 	return server.ListenAndServe()

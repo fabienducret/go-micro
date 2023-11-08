@@ -1,17 +1,12 @@
 package server
 
 import (
-	"broker/adapters"
-	"broker/config"
-	"broker/handlers"
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
-func initHandlersWith(c config.Config) *chi.Mux {
+func (s *server) initHandlers() *chi.Mux {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{
@@ -25,17 +20,9 @@ func initHandlersWith(c config.Config) *chi.Mux {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Post("/", handlers.Broker)
+	mux.Post("/", s.handlers.Broker)
 
-	mux.Post("/message", message(c))
+	mux.Post("/message", s.handlers.Message)
 
 	return mux
-}
-
-func message(c config.Config) func(w http.ResponseWriter, r *http.Request) {
-	auth := adapters.NewAuthentication(c.AuthenticationServiceAddress, c.AuthenticationServiceMethod)
-	logger := adapters.NewLogger(c.LoggerServiceAddress, c.LoggerServiceMethod)
-	mailer := adapters.NewMailer(c.MailerServiceAddress, c.MailerServiceMethod)
-
-	return handlers.MessageFactory(auth, logger, mailer)
 }
